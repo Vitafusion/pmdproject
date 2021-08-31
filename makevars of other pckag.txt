@@ -1,0 +1,33 @@
+PKG_CPPFLAGS=@CPPFLAGS@ @FFTW_CFLAGS@
+PKG_LIBS=@LIBS@ @FFTW_LIBS@
+
+all: $(SHLIB)
+
+
+PKG_CPPFLAGS=-I$(LIB_FFTW)/include
+PKG_LIBS=-L$(LIB_FFTW)/lib -l fftw3
+
+---------------------------------------------------------------
+# Kindly supplied by Dirk Eddelbuettel
+# set by configure
+GSL_CFLAGS = @GSL_CFLAGS@
+GSL_LIBS   = @GSL_LIBS@
+
+# combine to standard arguments for R
+PKG_CPPFLAGS =  $(GSL_CFLAGS) -I.
+PKG_LIBS = $(GSL_LIBS)
+
+
+# PKG_LIBS=-LF:/MinGW/usr/local/lib -lgsl -lgslcblas
+# CPPFLAGS=-I$(R_HOME)/include -IF:/MinGW/usr/local/include
+# PKG_CPPFLAGS=-IF:/MinGW/usr/local/include
+
+# lines below supplied by Brian Ripley and Uwe Ligges
+
+PKG_CPPFLAGS=-I$(LIB_GSL)/include
+PKG_LIBS=-L$(LIB_GSL)/lib -lgsl -lgslcblas
+
+-----------------------------------------------------------------------
+
+
+PKG_LIBS = -lfftw3 -lgsl -lgslcblas -lm

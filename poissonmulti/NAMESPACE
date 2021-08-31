@@ -1,0 +1,10 @@
+importFrom("stats", "runif")
+useDynLib(poissonmulti, .registration = TRUE)
+export(avg.tae.normal)
+export(l.vec.compute)
+export(pmatrix)
+export(pmd)
+export(avg.tae.simu)
+export(ppmn)
+export(pmd.by.demands)
+

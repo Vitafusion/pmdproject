@@ -1,0 +1,7 @@
+C_INCLUDE_PATH=~/usr/include
+
+export C_INCLUDE_PATH
+
+export LD_RUN_PATH=$HOME/usr/lib
+
+R CMD SHLIB functions.c -I$HOME/usr/include -L$HOME/usr/lib -lfftw3 -lgsl -lgslcblas -lm -o functions.so

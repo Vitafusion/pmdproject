@@ -100,18 +100,18 @@ p4 = dat %>% filter(m==4,
   theme(axis.title.y=element_blank())
 p4
 
-scaleFUN <- function(x) sprintf("%.1f", x)
+scaleFUN <- function(x) sprintf("%.3f", x)
 p5 = dat %>% filter(m==5,method=='simulation'|method=='normal') %>% ggplot() + 
   geom_path(aes(x=n,y=tae,colour=method,group=method,linetype=method), show.legend = F) + 
-  scale_y_continuous(trans = log_trans(),labels = scaleFUN) +labs(subtitle = 'm=5') + 
+  scale_y_continuous(trans = 'log10',breaks = c(1,0.1,0.01,0.001),labels = scaleFUN) +labs(subtitle = 'm=5') + 
   theme(axis.title.y=element_blank())
 
 p5
 
-scaleFUN <- function(x) sprintf("%.2f", x)
+scaleFUN <- function(x) sprintf("%.3f", x)
 p6 = dat %>% filter(m==6,method=='simulation'|method=='normal') %>% ggplot() + 
   geom_path(aes(x=n,y=tae,colour=method,group=method,linetype=method), show.legend = F) + 
-  scale_y_continuous(trans = log_trans(),labels = scaleFUN) +labs(subtitle = 'm=6') + 
+  scale_y_continuous(trans = 'log10', breaks = c(1,0.1,0.01,0.001), labels = scaleFUN) +labs(subtitle = 'm=6') + 
   ylab("TAE")
 
 p6
@@ -120,7 +120,7 @@ p6
 scaleFUN <- function(x) sprintf("%.3f", x)
 p7 = dat %>% filter(m==7,method=='simulation'|method=='normal') %>% ggplot() + 
   geom_path(aes(x=n,y=tae,colour=method,group=method,linetype=method)) + 
-  scale_y_continuous(trans = log_trans(),breaks = base_breaks(),labels = scaleFUN) +labs(subtitle = 'm=7') + 
+  scale_y_continuous(trans = log_trans(),breaks = c(1,0.1,0.01,0.001),labels = scaleFUN) +labs(subtitle = 'm=7') + 
   theme(axis.title.y=element_blank())
 
 p7

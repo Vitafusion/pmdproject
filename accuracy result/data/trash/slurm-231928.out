@@ -1,0 +1,135 @@
+Loading required package: foreach
+Loading required package: iterators
+Loading required package: parallel
+[1] "NormM 4 Tae K=500"
+[1] 128
+[1] "m=4,normal,tae"
+   n       TAE        MAE
+1 10 0.4260027 0.01177623
+   n       TAE         MAE
+1 20 0.4362593 0.004166502
+   n       TAE         MAE
+1 30 0.4498343 0.002356496
+   n       TAE         MAE
+1 40 0.4401221 0.001505909
+   n       TAE         MAE
+1 50 0.4312875 0.001057742
+   n       TAE          MAE
+1 60 0.4345545 0.0008129334
+   n       TAE         MAE
+1 70 0.4230541 0.000630004
+   n       TAE          MAE
+1 80 0.4376208 0.0005328243
+   n       TAE          MAE
+1 90 0.4135581 0.0004237024
+    n       TAE          MAE
+1 100 0.4037304 0.0003535544
+[1] "__________________________________"
+Loading required package: foreach
+Loading required package: iterators
+Loading required package: parallel
+[1] "NormM 4 Tae K=500"
+[1] 128
+[1] "m=4,normal,tae"
+   n       TAE        MAE
+1 10 0.4339781 0.01192182
+   n       TAE         MAE
+1 20 0.4613704 0.004402895
+   n       TAE         MAE
+1 30 0.4434373 0.002312666
+   n       TAE         MAE
+1 40 0.4297734 0.001470906
+   n       TAE         MAE
+1 50 0.4391651 0.001083551
+   n       TAE          MAE
+1 60 0.4282602 0.0008017457
+   n       TAE          MAE
+1 70 0.4250411 0.0006326313
+   n       TAE          MAE
+1 80 0.4306908 0.0005249286
+   n     TAE          MAE
+1 90 0.44388 0.0004549032
+    n       TAE          MAE
+1 100 0.4120834 0.0003606405
+[1] "__________________________________"
+Loading required package: foreach
+Loading required package: iterators
+Loading required package: parallel
+[1] "NormM 4 Tae K=500"
+[1] 128
+[1] "m=4,normal,tae"
+   n       TAE        MAE
+1 10 0.4301534 0.01188499
+   n       TAE         MAE
+1 20 0.4315652 0.004155728
+   n       TAE         MAE
+1 30 0.4535888 0.002369121
+   n       TAE         MAE
+1 40 0.4394308 0.001502619
+   n       TAE        MAE
+1 50 0.4330425 0.00106384
+   n       TAE         MAE
+1 60 0.4190637 0.000786678
+   n       TAE        MAE
+1 70 0.4095811 0.00061324
+   n       TAE          MAE
+1 80 0.4103606 0.0005024027
+   n       TAE          MAE
+1 90 0.4246731 0.0004352268
+    n       TAE          MAE
+1 100 0.4259535 0.0003721921
+[1] "__________________________________"
+Loading required package: foreach
+Loading required package: iterators
+Loading required package: parallel
+[1] "NormM 4 Tae K=500"
+[1] 128
+[1] "m=4,normal,tae"
+   n       TAE        MAE
+1 10 0.4262563 0.01173617
+   n       TAE        MAE
+1 20 0.4473744 0.00428333
+   n       TAE         MAE
+1 30 0.4330107 0.002261397
+   n       TAE         MAE
+1 40 0.4349633 0.001488748
+   n      TAE         MAE
+1 50 0.432468 0.001061624
+   n       TAE          MAE
+1 60 0.4335677 0.0008134063
+   n       TAE         MAE
+1 70 0.4197554 0.000623096
+   n       TAE          MAE
+1 80 0.4275444 0.0005203261
+   n       TAE          MAE
+1 90 0.4298844 0.0004410451
+    n       TAE          MAE
+1 100 0.4243994 0.0003698715
+[1] "__________________________________"
+Loading required package: foreach
+Loading required package: iterators
+Loading required package: parallel
+[1] "NormM 4 Tae K=500"
+[1] 128
+[1] "m=4,normal,tae"
+   n       TAE        MAE
+1 10 0.4458006 0.01220001
+   n      TAE         MAE
+1 20 0.454042 0.004367937
+   n       TAE         MAE
+1 30 0.4341798 0.002266094
+   n       TAE         MAE
+1 40 0.4423367 0.001515222
+   n       TAE         MAE
+1 50 0.4437171 0.001090442
+   n       TAE          MAE
+1 60 0.4341179 0.0008124664
+   n       TAE          MAE
+1 70 0.4226501 0.0006304137
+   n       TAE          MAE
+1 80 0.4234045 0.0005157096
+   n       TAE          MAE
+1 90 0.4468651 0.0004558194
+    n       TAE          MAE
+1 100 0.4427449 0.0003864068
+[1] "__________________________________"

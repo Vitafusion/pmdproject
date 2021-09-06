@@ -1,0 +1,52 @@
+Loading required package: foreach
+Loading required package: iterators
+Loading required package: parallel
+[1] "NormMTaeMae"
+[1] "m=5,normal,mae tae"
+[1] 128
+   n        MAE       TAE
+1 10 0.00646763 0.5643321
+   n         MAE       TAE
+1 20 0.001545802 0.5481894
+   n          MAE      TAE
+1 30 0.0007001232 0.552177
+   n          MAE       TAE
+1 40 0.0004400635 0.6062812
+   n          MAE      TAE
+1 50 0.0002734947 0.588112
+[1] "m=6,normal,mae tae"
+  n        MAE       TAE
+1 5 0.01232672 0.5470556
+   n         MAE       TAE
+1 10 0.002644101 0.5076421
+   n          MAE       TAE
+1 15 0.0009205273 0.4805096
+   n          MAE       TAE
+1 20 0.0005221116 0.5474331
+   n          MAE       TAE
+1 25 0.0003258181 0.5901903
+   n          MAE       TAE
+1 30 0.0001876656 0.5504213
+[1] "m=7,normal,mae tae"
+  n        MAE       TAE
+1 3 0.03108522 0.6449948
+  n         MAE       TAE
+1 6 0.005040946 0.5943505
+  n         MAE      TAE
+1 9 0.001793559 0.577962
+   n          MAE       TAE
+1 12 0.0008758392 0.6013844
+   n        MAE       TAE
+1 15 0.00046672 0.6106313
+[1] "m=8,normal,mae tae"
+  n        MAE       TAE
+1 2 0.05704742 0.6880493
+  n         MAE       TAE
+1 4 0.009266731 0.6153069
+  n         MAE       TAE
+1 6 0.002683808 0.5883113
+  n         MAE       TAE
+1 8 0.001245146 0.5938332
+   n          MAE       TAE
+1 10 0.0006479173 0.5644215
+There were 20 warnings (use warnings() to see them)

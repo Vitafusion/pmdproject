@@ -11,8 +11,10 @@ dat = read.table('accura_dat.txt',sep = '\t')
 dat$m = as.factor(dat$m)
 dat$method = as.factor(dat$method)
 
-dat.simu <- read.table('simulation.txt',sep='\t')
+dat.simu <- read.table("simulation.txt", sep=' ')
 dat.simu$B <- as.factor(dat.simu$B)
+
+
 #mae
 base_breaks <- function(n = 10){
   function(x) {
@@ -142,20 +144,30 @@ dev.off()
 # simulation
 
 
+base_breaks <- function(n = 10){
+  function(x) {
+    axisTicks(log10(range(x, na.rm = TRUE)), log = TRUE, n = n)
+  }
+}
 
-dat.simu %>% filter(B==10|B==10000|B==1e+07) %>% ggplot() + 
+scaleFUN <- function(x) sprintf("%.4f", x)
+
+p1 <- dat.simu %>% filter(B==10|B==10000|B==1e+07) %>% ggplot() + 
   geom_path(aes(x=n,y=err.max,colour=B,group=B,linetype=B), show.legend = T) + 
   scale_y_continuous(trans = 'log10', breaks = base_breaks()) +labs(subtitle = '100% Quantile') + 
   ylab("error") + theme(plot.subtitle = element_text(hjust = 0.5))
 
-dat.simu %>% filter(n<40) %>% filter(B==10|B==10000|B==1e+07) %>% ggplot() + 
+p2 <- dat.simu %>% filter(n<40) %>% filter(B==10|B==10000|B==1e+07) %>% ggplot() + 
   geom_path(aes(x=n,y=err.75,colour=B,group=B,linetype=B), show.legend = T) + 
   scale_y_continuous(trans = 'log10', breaks = base_breaks()) +labs(subtitle = '75% Quantile') + 
   ylab("error") + theme(plot.subtitle = element_text(hjust = 0.5))
 
 
-dat.simu %>% filter(n<30) %>% filter(B==10|B==10000|B==1e+07) %>% ggplot() + 
+p3 <- dat.simu %>% filter(n<30) %>% filter(B==10|B==10000|B==1e+07) %>% ggplot() + 
   geom_path(aes(x=n,y=err.50,colour=B,group=B,linetype=B), show.legend = T) + 
   scale_y_continuous(trans = 'log10', breaks = base_breaks()) +labs(subtitle = '50% Quantile') + 
   ylab("error") + theme(plot.subtitle = element_text(hjust = 0.5))
+
+
+ggarrange(p1,p2,p3, ncol=3, nrow=1, common.legend = TRUE, legend="bottom")
 

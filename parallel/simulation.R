@@ -33,11 +33,11 @@ p.matrix <- function(n,m){
 
 library(poissonmulti)
 
-K <- 10
+K <- 100
 m <- 3
 n <- c(1:10)
 N <- length(n)
-b <- c(10,10^2)
+b <- c(10, 10^2, 10^3, 10^4, 10^5)
 results <- matrix(0,nrow = 1 ,ncol = 9)
 results <- as.data.frame(results)
 colnames(results) <- c("n","m","B","max","err.max","per.75","err.75","per.50","err.50")
@@ -79,3 +79,5 @@ for (j in 1:length(b)) {
 }
 
 results
+
+write.table(results, 'results.txt', sep='\t')

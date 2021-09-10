@@ -400,12 +400,32 @@ l.vec.compute=function(k, cn.vec, m)
   return(l.vec)
 }
 
-pmatrix <- function(n,m){
+q.find <- function(res,q){
+  res.temp <- res[res!=0]
+  q.temp <- quantile(res.temp,q)
+  q.addr <- which(res==q.temp)
+  if(length(q.addr)==0){
+    dis <- abs(res.temp-q.temp)
+    temp.addr <- which(dis==min(dis))[1]
+  }
+  q.addr <- which(res==res.temp[temp.addr])
+  return(q.addr)
+}
+
+
+p.matrix <- function(n,m){
   p <- matrix(0,nrow = n,ncol = m,byrow = T)
   for (i in 1:n) {
-    r <- runif(m)
-    r <- r/sum(r) #generate row
-    p[i,] <- r
+    r = runif(m)
+    r = r/sum(r) #generate row
+    r[1:(m-1)] = round(r[1:(m-1)],3)
+    while(sum(r[1:(m-1)])>1){
+        r = runif(m)
+        r = r/sum(r) #generate row
+        r[1:(m-1)] = round(r[1:(m-1)],3)
+    }
+    r[m] = 1-sum(r[1:(m-1)])
+    p[i,] = r
   }
   return(p)
 }

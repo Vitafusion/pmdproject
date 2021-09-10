@@ -37,8 +37,8 @@ K <- 100
 m <- 3
 n <- c(1:10)
 N <- length(n)
-b <- c(10^6,1 0^7)
-results <- matrix(0,nrow = 1 ,ncol = 9)
+b <- c(10^6, 10^7)
+results <- matrix(0,nrow = 1, ncol = 9)
 results <- as.data.frame(results)
 colnames(results) <- c("n","m","B","max","err.max","per.95","err.95","per.90","err.90")
 temp <- results
@@ -51,9 +51,9 @@ print("b from 10^6 to 10^7")
 
 for (j in 1:length(b)) {
   for (i in 1:N) {
-    results$B <- b[j]
-    results$n <- 10*i
-    results$m <- m
+    temp2$B <- b[j]
+    temp2$n <- 10*i
+    temp2$m <- m
     for(k in 1:K){
       pp <- p.matrix(10*i,m)
       res0 <- pmd(pp)

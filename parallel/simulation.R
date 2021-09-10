@@ -50,9 +50,9 @@ print("b from 10^1 to 10^5")
 
 for (j in 1:length(b)) {
   for (i in 1:N) {
-    results$B <- b[j]
-    results$n <- 10*i
-    results$m <- m
+    temp2$B <- b[j]
+    temp2$n <- 10*i
+    temp2$m <- m
     for(k in 1:K){
       pp <- p.matrix(10*i,m)
       res0 <- pmd(pp)

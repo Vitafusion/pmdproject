@@ -6,8 +6,8 @@ q.find <- function(res,q){
   if(length(q.addr)==0){
     dis <- abs(res.temp-q.temp)
     temp.addr <- which(dis==min(dis))[1]
+    q.addr <- which(res==res.temp[temp.addr])
   }
-  q.addr <- which(res==res.temp[temp.addr])
   return(q.addr)
 }
 
@@ -33,14 +33,14 @@ p.matrix <- function(n,m){
 
 library(poissonmulti)
 
-K <- 100
+K <- 10
 m <- 3
 n <- c(1:10)
 N <- length(n)
-b <- c(10, 10^2, 10^3, 10^4, 10^5)
+b <- c(10, 10^2, 10^3, 10^5)
 results <- matrix(0,nrow = 1 ,ncol = 9)
 results <- as.data.frame(results)
-colnames(results) <- c("n","m","B","max","err.max","per.75","err.75","per.50","err.50")
+colnames(results) <- c("n","m","B","max","err.max","per.95","err.95","per.90","err.90")
 temp <- results
 temp2 <- temp
 
@@ -57,19 +57,19 @@ for (j in 1:length(b)) {
       pp <- p.matrix(10*i,m)
       res0 <- pmd(pp)
       res1 <- pmd(pp, method = "simulation", t=b[j])
-      quan.res0 <- quantile(res0)
-      index.max <- which(res0 == quan.res0[5])[1]
-      index.75 <- which(res0 == quan.res0[4])[1]
-      index.50 <-  which(res0 == quan.res0[3])[1]
+      
+      index.max <- q.find(res0,1)
+      index.95 <- q.find(res0,0.95)
+      index.90 <-  q.find(res0,0.90)
       err.max <- abs(res0[index.max] - res1[index.max])
-      err.75 <- abs(res0[index.75] - res1[index.75])
-      err.50 <- abs(res0[index.50] - res1[index.50])
+      err.95 <- abs(res0[index.95] - res1[index.95])
+      err.90 <- abs(res0[index.90] - res1[index.90])
       temp$max <- res0[index.max]
       temp$err.max <- err.max
-      temp$`per.75` <- res0[index.75]
-      temp$err.75 <- err.75
-      temp$`per.50` <- res0[index.50]
-      temp$err.50 <- err.50
+      temp$`per.95` <- res0[index.95]
+      temp$err.95 <- err.95
+      temp$`per.90` <- res0[index.90]
+      temp$err.90 <- err.90
       temp2[,4:9] <- temp2[,4:9] + temp[,4:9]
     }
     temp2[,4:9] <- temp2[,4:9]/K
@@ -80,4 +80,4 @@ for (j in 1:length(b)) {
 
 results
 
-write.table(results, 'results.txt', sep='\t')
+write.table(results, 'results1.txt', sep='\t')

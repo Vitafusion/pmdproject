@@ -33,16 +33,16 @@ p.matrix <- function(n,m){
 
 library(poissonmulti)
 
-K <- 100
+K <- 10
 m <- 3
 n <- c(1:10)
 N <- length(n)
-b <- c(10,10^2,10^3,10^4,10^5)
+b <- c(10,10^2)
 results <- matrix(0,nrow = 1 ,ncol = 9)
 results <- as.data.frame(results)
 colnames(results) <- c("n","m","B","max","err.max","per.75","err.75","per.50","err.50")
 temp <- results
-
+temp2 <- temp
 
 
 print("b from 10^1 to 10^5")
@@ -70,10 +70,12 @@ for (j in 1:length(b)) {
       temp$err.75 <- err.75
       temp$`per.50` <- res0[index.50]
       temp$err.50 <- err.50
-      results[,4:9] <- results[,4:9] + temp[,4:9]
+      temp2[,4:9] <- temp2[,4:9] + temp[,4:9]
     }
-    results[,4:9] <- results[,4:9]/K
+    temp2[,4:9] <- temp2[,4:9]/K
+    results <- rbind(results,temp2)
     print(results)
   }
 }
 
+results

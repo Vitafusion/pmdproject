@@ -40,7 +40,7 @@ N <- length(n)
 b <- c(10^6, 10^7)
 results <- matrix(0,nrow = 1, ncol = 9)
 results <- as.data.frame(results)
-colnames(results) <- c("n","m","B","max","err.max","per.95","err.95","per.90","err.90")
+colnames(results) <- c("n","m","B","max","err.max","per.75","err.75","per.50","err.50")
 temp <- results
 temp2 <- temp
 
@@ -60,17 +60,17 @@ for (j in 1:length(b)) {
       res1 <- pmd(pp, method = "simulation", t=b[j])
       
       index.max <- q.find(res0,1)
-      index.95 <- q.find(res0,0.95)
-      index.90 <-  q.find(res0,0.90)
+      index.75 <- q.find(res0,0.75)
+      index.50 <-  q.find(res0,0.50)
       err.max <- abs(res0[index.max] - res1[index.max])
-      err.95 <- abs(res0[index.95] - res1[index.95])
-      err.90 <- abs(res0[index.90] - res1[index.90])
+      err.75 <- abs(res0[index.75] - res1[index.75])
+      err.50 <- abs(res0[index.50] - res1[index.50])
       temp$max <- res0[index.max]
       temp$err.max <- err.max
-      temp$`per.95` <- res0[index.95]
-      temp$err.95 <- err.95
-      temp$`per.90` <- res0[index.90]
-      temp$err.90 <- err.90
+      temp$`per.75` <- res0[index.75]
+      temp$err.75 <- err.75
+      temp$`per.50` <- res0[index.50]
+      temp$err.50 <- err.50
       temp2[,4:9] <- temp2[,4:9] + temp[,4:9]
     }
     temp2[,4:9] <- temp2[,4:9]/K

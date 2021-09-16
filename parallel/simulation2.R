@@ -82,4 +82,4 @@ for (j in 1:length(b)) {
 
 results
 
-write.table(results, 'results2.txt', sep='\t')
+write.table(results, 'results752.txt', sep='\t')

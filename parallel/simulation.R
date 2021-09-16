@@ -2,7 +2,14 @@
 q.find <- function(res,q){
   res.temp <- res[res!=0]
   q.temp <- quantile(res.temp,q)
-  q.addr <- which(res==q.temp)[1]
+  
+  if(length(which(res==q.temp))>1){
+    q.addr <- which(res==q.temp)[1]
+  }
+  else{
+    q.addr <- which(res==q.temp)
+  }
+
   if(length(q.addr)==0){
     dis <- abs(res.temp-q.temp)
     temp.addr <- which(dis==min(dis))[1]

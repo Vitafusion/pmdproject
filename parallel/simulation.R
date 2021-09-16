@@ -6,7 +6,7 @@ q.find <- function(res,q){
   if(length(q.addr)==0){
     dis <- abs(res.temp-q.temp)
     temp.addr <- which(dis==min(dis))[1]
-    q.addr <- which(res==res.temp[temp.addr])
+    q.addr <- which(res==res.temp[temp.addr])[1]
   }
   return(q.addr)
 }

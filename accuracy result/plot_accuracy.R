@@ -10,9 +10,11 @@ setwd("~/Desktop/research/pmd/pmdproject/pmdproject/accuracy result/data")
 dat = read.table('accura_dat.txt',sep = '\t')
 dat$m = as.factor(dat$m)
 dat$method = as.factor(dat$method)
+dat.bino <- read.table("binomial.txt")
+dat.poi <- read.table("poibiom.txt")
 
 
-dat.simu <- read.table("simuacc.txt",sep = '\t')
+dat.simu <- read.table("simu.txt",sep = '\t')
 dat.simu$B <- as.factor(dat.simu$B)
 
 
@@ -153,22 +155,52 @@ base_breaks <- function(n = 10){
 
 scaleFUN <- function(x) sprintf("%.4f", x)
 
-p1 <- dat.simu %>% filter(B==10|B==1e+05|B==1e+07) %>% ggplot() + 
+p1 <- dat.simu %>% filter(n<=75) %>% filter(B==10|B==1e+05|B==1e+07) %>% ggplot() + 
   geom_path(aes(x=n,y=err.max,colour=B,group=B,linetype=B), show.legend = T) + 
-  scale_y_continuous(trans = 'log10', breaks = base_breaks()) +labs(subtitle = '100% Quantile') + 
+  scale_y_continuous(trans = 'log10', breaks = base_breaks()) +labs(subtitle = 'Maximum') + 
   ylab("error") + theme(plot.subtitle = element_text(hjust = 0.5))
 
-p2 <- dat.simu %>% filter(n<40) %>% filter(B==10|B==1e+05|B==1e+07) %>% ggplot() + 
+p2 <- dat.simu %>% filter(n<=75) %>% filter(B==10|B==1e+05|B==1e+07) %>% ggplot() + 
   geom_path(aes(x=n,y=err.95,colour=B,group=B,linetype=B), show.legend = T) + 
-  scale_y_continuous(trans = 'log10', breaks = base_breaks()) +labs(subtitle = '95% Quantile') + 
+  scale_y_continuous(trans = 'log10', breaks = base_breaks()) +
+  labs(subtitle = '0.95 Quantile') + 
   ylab("error") + theme(plot.subtitle = element_text(hjust = 0.5))
 
 
-p3 <- dat.simu %>% filter(n<30) %>% filter(B==10|B==1e+05|B==1e+07) %>% ggplot() + 
+p3 <- dat.simu  %>% filter(n<=75) %>% filter(B==10|B==1e+05|B==1e+07) %>% ggplot() + 
   geom_path(aes(x=n,y=err.90,colour=B,group=B,linetype=B), show.legend = T) + 
-  scale_y_continuous(trans = 'log10', breaks = base_breaks()) +labs(subtitle = '90% Quantile') + 
-  ylab("error") + theme(plot.subtitle = element_text(hjust = 0.5))
+  scale_y_continuous(trans = 'log10', breaks = base_breaks()) +labs(subtitle = '0.90 Quantile') + 
+  ylab("error") + theme(plot.subtitle = element_text(hjust = 0.5)) 
 
-
+p3
 ggarrange(p1,p2,p3, ncol=3, nrow=1, common.legend = TRUE, legend="bottom")
 
+
+
+### binomial
+
+p1 <- dat.bino %>% ggplot() + 
+  geom_path(aes(x=n,y=mae)) + ylab('MAE')
+p2 <- dat.bino %>% ggplot() + 
+  geom_path(aes(x=n,y=tae)) + ylab('TAE')
+
+
+p2
+
+
+ggarrange(p1,p2, ncol=2, nrow=1, common.legend = TRUE, legend="bottom")
+
+
+
+### poisonbinomial
+
+p1 <- dat.poi %>% ggplot() + 
+  geom_path(aes(x=n,y=mae)) + ylab('MAE')
+p2 <- dat.poi %>% ggplot() + 
+  geom_path(aes(x=n,y=tae)) + ylab('TAE')
+
+
+p2
+
+
+ggarrange(p1,p2, ncol=2, nrow=1, common.legend = TRUE, legend="bottom")

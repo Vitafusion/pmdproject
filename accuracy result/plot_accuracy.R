@@ -179,18 +179,32 @@ ggarrange(p1,p2,p3, ncol=3, nrow=1, common.legend = TRUE, legend="bottom")
 
 ### binomial
 
-p1 <- dat.bino %>% ggplot() + 
-  geom_path(aes(x=n,y=mae)) + ylab('MAE')
-p2 <- dat.bino %>% ggplot() + 
-  geom_path(aes(x=n,y=tae)) + ylab('TAE')
 
+
+dat.bino <- dat.bino[10*c(1:10),]
+
+p1 <- dat.bino %>% ggplot() + 
+  geom_path(aes(x=n,y=mae)) + ylab('MAE') + 
+  scale_y_continuous(name='MAE',limits=c(4e-11,1e-10))
+
+p1
+p2 <- dat.bino %>% ggplot() + 
+  geom_path(aes(x=n,y=tae)) + ylab('TAE') +
+  scale_y_continuous(name='TAE',limits=c(1e-9,1e-8))
 
 p2
 
 
-ggarrange(p1,p2, ncol=2, nrow=1, common.legend = TRUE, legend="bottom")
+setEPS()
+postscript("bino_mae.eps")
+p1
+dev.off()
 
 
+setEPS()
+postscript("bino_tae.eps")
+p2
+dev.off()
 
 ### poisonbinomial
 
@@ -204,3 +218,31 @@ p2
 
 
 ggarrange(p1,p2, ncol=2, nrow=1, common.legend = TRUE, legend="bottom")
+
+
+
+
+
+
+p3 <- dat.poi %>% ggplot() + 
+  geom_path(aes(x=n,y=mae)) + ylab('MAE') + 
+  scale_y_continuous(name='MAE',limits=c(4e-11,1e-10))
+
+p3
+p4 <- dat.poi %>% ggplot() + 
+  geom_path(aes(x=n,y=tae)) + ylab('TAE') +
+  scale_y_continuous(name='TAE',limits=c(1e-9,1e-8))
+
+p4
+
+
+setEPS()
+postscript("poi_mae.eps")
+p3
+dev.off()
+
+
+setEPS()
+postscript("poi_tae.eps")
+p4
+dev.off()

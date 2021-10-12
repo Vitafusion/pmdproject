@@ -8,17 +8,22 @@ library(ggpubr)
 setwd("~/Desktop/research/pmd/pmdproject/pmdproject/accuracy result/data")
 
 dat = read.table('accura_dat.txt',sep = '\t')
+dat$method[which(dat$method=='Original')] <- "Baseline"
+
 dat$m = as.factor(dat$m)
 dat$method = as.factor(dat$method)
+
+
 dat.bino <- read.table("binomial.txt")
 dat.poi <- read.table("poibiom.txt")
+
+
 
 
 dat.simu <- read.table("simu.txt",sep = '\t')
 dat.simu$B <- as.factor(dat.simu$B)
 
-
-#mae
+## plot functions
 base_breaks <- function(n = 10){
   function(x) {
     axisTicks(log10(range(x, na.rm = TRUE)), log = TRUE, n = n)
@@ -26,6 +31,77 @@ base_breaks <- function(n = 10){
 }
 
 scaleFUN <- function(x) sprintf("%.4f", x)
+
+
+## normal
+
+dat.norm <- dat[which(dat$method==c('N.A', 'Baseline')),]
+
+
+p3 = dat.norm %>% filter(m==3) %>% ggplot(aes(x=n, y=mae)) + 
+  geom_path(aes(color=method, linetype=method)) + 
+  scale_y_continuous(trans = 'log10', breaks = base_breaks()) +labs(subtitle = 'm=3') + 
+  ylab("MAE") + theme(plot.subtitle = element_text(hjust = 0.5)) +
+  scale_color_manual(name="method",
+                     labels=c("Baseline", "NA"),
+                     values=c("red","blue")) +
+  scale_linetype_manual(name="method",
+                        labels=c("Baseline", "NA"),
+                        values=c("dashed", "solid")) + 
+  theme(axis.text.x = element_text(face="bold", 
+                                   size=8),
+        axis.text.y = element_text(face="bold", 
+                                   size=8),
+        axis.title=element_text(size=10,face="bold")) 
+
+p3
+
+
+p5 = dat.norm %>% filter(m==5) %>% ggplot(aes(x=n, y=mae)) + 
+  geom_path(aes(color=method, linetype=method)) + 
+  scale_y_continuous(trans = 'log10', breaks = base_breaks()) +labs(subtitle = 'm=5') + 
+  ylab("MAE") + theme(plot.subtitle = element_text(hjust = 0.5)) +
+  scale_color_manual(name="method",
+                     labels=c("Baseline", "NA"),
+                     values=c("red","blue")) +
+  scale_linetype_manual(name="method",
+                        labels=c("Baseline", "NA"),
+                        values=c("dashed", "solid")) + 
+  theme(axis.text.x = element_text(face="bold", 
+                                   size=8),
+        axis.text.y = element_text(face="bold", 
+                                   size=8),
+        axis.title=element_text(size=10,face="bold")) 
+
+p5
+
+
+p7 = dat.norm %>% filter(m==7) %>% ggplot(aes(x=n, y=mae)) + 
+  geom_path(aes(color=method, linetype=method)) + 
+  scale_y_continuous(trans = 'log10', breaks = base_breaks()) +labs(subtitle = 'm=7') + 
+  ylab("MAE") + theme(plot.subtitle = element_text(hjust = 0.5)) +
+  scale_color_manual(name="method",
+                     labels=c("Baseline", "NA"),
+                     values=c("red","blue")) +
+  scale_linetype_manual(name="method",
+                        labels=c("Baseline", "NA"),
+                        values=c("dashed", "solid")) + 
+  theme(axis.text.x = element_text(face="bold", 
+                                   size=8),
+        axis.text.y = element_text(face="bold", 
+                                   size=8),
+        axis.title=element_text(size=10,face="bold")) 
+
+p7
+
+
+
+
+ggarrange(p3,p5,p7, ncol=3, nrow=1, common.legend = TRUE, legend="bottom")
+
+
+
+#mae compare all methods
 
 p3 = dat %>% filter(m==3) %>% ggplot() + 
   geom_path(aes(x=n,y=mae,colour=method,group=method,linetype=method), show.legend = T) + 
@@ -35,14 +111,6 @@ p3 = dat %>% filter(m==3) %>% ggplot() +
 p3
 
 
-base_breaks <- function(n = 10){
-  function(x) {
-    axisTicks(log10(range(x, na.rm = TRUE)), log = TRUE, n = n)
-  }
-}
-
-scaleFUN <- function(x) sprintf("%.4f", x)
-
 p4 = dat %>% filter(m==4) %>% ggplot() + 
   geom_path(aes(x=n,y=mae,colour=method,group=method,linetype=method), show.legend = F) + 
   scale_y_continuous(trans = 'log10', breaks = base_breaks(),labels = scaleFUN) +labs(subtitle = 'm=4') + 
@@ -51,13 +119,6 @@ p4 = dat %>% filter(m==4) %>% ggplot() +
 p4
 
 
-
-base_breaks <- function(n = 10){
-  function(x) {
-    axisTicks(log10(range(x, na.rm = TRUE)), log = TRUE, n = n)
-  }
-}
-scaleFUN <- function(x) sprintf("%.4f", x)
 p5 = dat %>% filter(m==5) %>% ggplot() + 
   geom_path(aes(x=n,y=mae,colour=method,group=method,linetype=method), show.legend = F) + 
   scale_y_continuous(trans = log_trans(), breaks = base_breaks(),labels = scaleFUN) +labs(subtitle = 'm=5') + 
@@ -80,14 +141,14 @@ p7 = dat %>% filter(m==7) %>% ggplot() +
 
 p7
 
-pdf(file = 'mae_all.pdf')
+#pdf(file = 'mae_all.pdf')
 
 #grid.arrange(p3,p4,p5,p6,p7,ncol = 3, nrow = 2)
 ggarrange(p3,p5,p7, ncol=3, nrow=1, common.legend = TRUE, legend="bottom")
 
-dev.off()
+#dev.off()
 
-#tae
+#tae all methods
 
 
 scaleFUN <- function(x) sprintf("%.1f", x)
@@ -147,30 +208,37 @@ dev.off()
 # simulation
 
 
-base_breaks <- function(n = 10){
-  function(x) {
-    axisTicks(log10(range(x, na.rm = TRUE)), log = TRUE, n = n)
-  }
-}
-
-scaleFUN <- function(x) sprintf("%.4f", x)
-
 p1 <- dat.simu %>% filter(n<=75) %>% filter(B==10|B==1e+05|B==1e+07) %>% ggplot() + 
   geom_path(aes(x=n,y=err.max,colour=B,group=B,linetype=B), show.legend = T) + 
   scale_y_continuous(trans = 'log10', breaks = base_breaks()) +labs(subtitle = 'Maximum') + 
-  ylab("error") + theme(plot.subtitle = element_text(hjust = 0.5))
+  ylab("error") + theme(plot.subtitle = element_text(hjust = 0.5)) +
+  theme(axis.text.x = element_text(face="bold", 
+                                   size=8),
+        axis.text.y = element_text(face="bold", 
+                                   size=8),
+        axis.title=element_text(size=10,face="bold")) 
 
-p2 <- dat.simu %>% filter(n<=75) %>% filter(B==10|B==1e+05|B==1e+07) %>% ggplot() + 
+p2 <- dat.simu %>% filter(n<=75 & n!=60) %>% filter(B==10|B==1e+05|B==1e+07) %>% ggplot() + 
   geom_path(aes(x=n,y=err.95,colour=B,group=B,linetype=B), show.legend = T) + 
   scale_y_continuous(trans = 'log10', breaks = base_breaks()) +
   labs(subtitle = '0.95 Quantile') + 
-  ylab("error") + theme(plot.subtitle = element_text(hjust = 0.5))
+  ylab("error") + theme(plot.subtitle = element_text(hjust = 0.5)) + 
+  theme(axis.text.x = element_text(face="bold", 
+                                   size=8),
+        axis.text.y = element_text(face="bold", 
+                                   size=8),
+        axis.title=element_text(size=10,face="bold")) 
 
 
 p3 <- dat.simu  %>% filter(n<=75) %>% filter(B==10|B==1e+05|B==1e+07) %>% ggplot() + 
   geom_path(aes(x=n,y=err.90,colour=B,group=B,linetype=B), show.legend = T) + 
   scale_y_continuous(trans = 'log10', breaks = base_breaks()) +labs(subtitle = '0.90 Quantile') + 
-  ylab("error") + theme(plot.subtitle = element_text(hjust = 0.5)) 
+  ylab("error") + theme(plot.subtitle = element_text(hjust = 0.5))  + 
+  theme(axis.text.x = element_text(face="bold", 
+                                   size=8),
+        axis.text.y = element_text(face="bold", 
+                                   size=8),
+        axis.title=element_text(size=10,face="bold")) 
 
 p3
 ggarrange(p1,p2,p3, ncol=3, nrow=1, common.legend = TRUE, legend="bottom")
@@ -185,12 +253,22 @@ dat.bino <- dat.bino[10*c(1:10),]
 
 p1 <- dat.bino %>% ggplot() + 
   geom_path(aes(x=n,y=mae)) + ylab('MAE') + 
-  scale_y_continuous(name='MAE',limits=c(4e-11,1e-10))
+  scale_y_continuous(name='MAE',limits=c(4e-11,1e-10)) + 
+  theme(axis.text.x = element_text(face="bold", 
+                                   size=8),
+        axis.text.y = element_text(face="bold", 
+                                   size=8),
+        axis.title=element_text(size=10,face="bold")) 
 
 p1
 p2 <- dat.bino %>% ggplot() + 
   geom_path(aes(x=n,y=tae)) + ylab('TAE') +
-  scale_y_continuous(name='TAE',limits=c(1e-9,1e-8))
+  scale_y_continuous(name='TAE',limits=c(1e-9,1e-8)) + 
+  theme(axis.text.x = element_text(face="bold", 
+                                   size=8),
+        axis.text.y = element_text(face="bold", 
+                                   size=8),
+        axis.title=element_text(size=10,face="bold")) 
 
 p2
 
@@ -209,13 +287,23 @@ dev.off()
 ### poisonbinomial
 
 p1 <- dat.poi %>% ggplot() + 
-  geom_path(aes(x=n,y=mae)) + ylab('MAE')
+  geom_path(aes(x=n,y=mae)) + ylab('MAE') + 
+  theme(axis.text.x = element_text(face="bold", 
+                                   size=8),
+        axis.text.y = element_text(face="bold", 
+                                   size=8),
+        axis.title=element_text(size=10,face="bold")) 
 p2 <- dat.poi %>% ggplot() + 
-  geom_path(aes(x=n,y=tae)) + ylab('TAE')
+  geom_path(aes(x=n,y=tae)) + ylab('TAE') + 
+  theme(axis.text.x = element_text(face="bold", 
+                                   size=8),
+        axis.text.y = element_text(face="bold", 
+                                   size=8),
+        axis.title=element_text(size=10,face="bold")) 
 
 
 p2
-
+p1
 
 ggarrange(p1,p2, ncol=2, nrow=1, common.legend = TRUE, legend="bottom")
 
@@ -226,12 +314,22 @@ ggarrange(p1,p2, ncol=2, nrow=1, common.legend = TRUE, legend="bottom")
 
 p3 <- dat.poi %>% ggplot() + 
   geom_path(aes(x=n,y=mae)) + ylab('MAE') + 
-  scale_y_continuous(name='MAE',limits=c(4e-11,1e-10))
+  scale_y_continuous(name='MAE',limits=c(4e-11,1e-10)) + 
+  theme(axis.text.x = element_text(face="bold", 
+                                   size=8),
+        axis.text.y = element_text(face="bold", 
+                                   size=8),
+        axis.title=element_text(size=10,face="bold")) 
 
 p3
 p4 <- dat.poi %>% ggplot() + 
   geom_path(aes(x=n,y=tae)) + ylab('TAE') +
-  scale_y_continuous(name='TAE',limits=c(1e-9,1e-8))
+  scale_y_continuous(name='TAE',limits=c(1e-9,1e-8)) + 
+  theme(axis.text.x = element_text(face="bold", 
+                                   size=8),
+        axis.text.y = element_text(face="bold", 
+                                   size=8),
+        axis.title=element_text(size=10,face="bold")) 
 
 p4
 

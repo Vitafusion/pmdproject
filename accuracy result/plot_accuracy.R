@@ -14,8 +14,8 @@ dat$m = as.factor(dat$m)
 dat$method = as.factor(dat$method)
 
 
-dat.bino <- read.table("binomial.txt")
-dat.poi <- read.table("poibiom.txt")
+dat.bino <- read.table("~/Desktop/research/pmd/pmdproject/pmdproject/accuracy result/data/binomial.txt")
+dat.poi <- read.table("~/Desktop/research/pmd/pmdproject/pmdproject/accuracy result/data/poibiom.txt")
 
 
 
@@ -252,23 +252,23 @@ ggarrange(p1,p2,p3, ncol=3, nrow=1, common.legend = TRUE, legend="bottom")
 dat.bino <- dat.bino[10*c(1:10),]
 
 p1 <- dat.bino %>% ggplot() + 
-  geom_path(aes(x=n,y=mae)) + ylab('MAE') + 
+  geom_path(aes(x=n,y=mae), size=.8) + ylab('MAE') + 
   scale_y_continuous(name='MAE',limits=c(4e-11,1e-10)) + 
   theme(axis.text.x = element_text(face="bold", 
-                                   size=8),
+                                   size=15),
         axis.text.y = element_text(face="bold", 
-                                   size=8),
-        axis.title=element_text(size=10,face="bold")) 
+                                   size=15),
+        axis.title=element_text(size=16,face="bold")) 
 
 p1
 p2 <- dat.bino %>% ggplot() + 
-  geom_path(aes(x=n,y=tae)) + ylab('TAE') +
+  geom_path(aes(x=n,y=tae), size=.8) + ylab('TAE') +
   scale_y_continuous(name='TAE',limits=c(1e-9,1e-8)) + 
   theme(axis.text.x = element_text(face="bold", 
-                                   size=8),
+                                   size=15),
         axis.text.y = element_text(face="bold", 
-                                   size=8),
-        axis.title=element_text(size=10,face="bold")) 
+                                   size=15),
+        axis.title=element_text(size=16,face="bold")) 
 
 p2
 
@@ -286,50 +286,24 @@ dev.off()
 
 ### poisonbinomial
 
-p1 <- dat.poi %>% ggplot() + 
-  geom_path(aes(x=n,y=mae)) + ylab('MAE') + 
-  theme(axis.text.x = element_text(face="bold", 
-                                   size=8),
-        axis.text.y = element_text(face="bold", 
-                                   size=8),
-        axis.title=element_text(size=10,face="bold")) 
-p2 <- dat.poi %>% ggplot() + 
-  geom_path(aes(x=n,y=tae)) + ylab('TAE') + 
-  theme(axis.text.x = element_text(face="bold", 
-                                   size=8),
-        axis.text.y = element_text(face="bold", 
-                                   size=8),
-        axis.title=element_text(size=10,face="bold")) 
-
-
-p2
-p1
-
-ggarrange(p1,p2, ncol=2, nrow=1, common.legend = TRUE, legend="bottom")
-
-
-
-
-
-
 p3 <- dat.poi %>% ggplot() + 
-  geom_path(aes(x=n,y=mae)) + ylab('MAE') + 
+  geom_path(aes(x=n,y=mae), size=.8) + ylab('MAE') + 
   scale_y_continuous(name='MAE',limits=c(4e-11,1e-10)) + 
   theme(axis.text.x = element_text(face="bold", 
-                                   size=8),
+                                   size=15),
         axis.text.y = element_text(face="bold", 
-                                   size=8),
-        axis.title=element_text(size=10,face="bold")) 
+                                   size=15),
+        axis.title=element_text(size=16,face="bold")) 
 
 p3
 p4 <- dat.poi %>% ggplot() + 
-  geom_path(aes(x=n,y=tae)) + ylab('TAE') +
+  geom_path(aes(x=n,y=tae), size=.8) + ylab('TAE') +
   scale_y_continuous(name='TAE',limits=c(1e-9,1e-8)) + 
   theme(axis.text.x = element_text(face="bold", 
-                                   size=8),
+                                   size=15),
         axis.text.y = element_text(face="bold", 
-                                   size=8),
-        axis.title=element_text(size=10,face="bold")) 
+                                   size=15),
+        axis.title=element_text(size=16,face="bold")) 
 
 p4
 
@@ -344,3 +318,4 @@ setEPS()
 postscript("poi_tae.eps")
 p4
 dev.off()
+

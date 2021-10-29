@@ -1,5 +1,7 @@
 load("res.RData")
 
+
+#build a dataframe to contain the result computed from dpmd
 y <- z <- x <- c() 
 
 for(i in 1:11){
@@ -10,6 +12,7 @@ for(i in 1:11){
   }
 }
 
+#build a dataframe to contain the results
 m <- as.data.frame(matrix(c(x,y,z),ncol=3))
 colnames(m) <- c("x","y","z")
 m$col <- "dd"
@@ -28,6 +31,52 @@ for (i in 1:nrow(m)) {
   m$shape[i] <- "dash-dash"
   
 }
+
+
+
+##2D matrix plot
+library('plot.matrix')
+y <- x <- c(1:11)
+
+z <- matrix(0, nrow=11, ncol=11)
+result.mat <- matrix('tie', nrow=11, ncol=11)
+for(i in 1:nrow(z)){
+  for (j in 1:ncol(z)) {
+    z[i,j] <- res1[i,j]
+    x1 <- i-1
+    x2 <- j-1
+    x3 <- 10-x1-x2
+    if(x1>x2 && x1>x3)
+      result.mat[i,j]='x1'
+    if(x2>x1 && x2>x3)
+      result.mat[i,j]='x2'
+    if(x3>x2 && x3>x1)
+      result.mat[i,j]='x3'
+  }
+}
+
+
+plot(result.mat, digits=3, 
+     col=c("red","grey","green","yellow"), 
+     text.cell=list(pos=3, cex=0.9, offset=-0.1), 
+     xlab="", ylab="", cex.lab=1,
+     key=NULL)
+mtext(text = "x1",
+      side = 1,#side 1 = bottom
+      line = 2, cex=1.2)
+mtext(text = "x2",
+      side = 2,#side 2 = left
+      line = 2, cex=1.2)
+
+
+##3dbarplot
+library(plot3D)
+hist3D(z = z, x = x, y = y, col = "White",
+       border = "black", lighting = T, phi=40, theta = 40,space=0.0,
+       cex.lab=0.8, 
+       xlab="x1", 
+       ylab="x2",
+       zlab="prob")
 
 
 

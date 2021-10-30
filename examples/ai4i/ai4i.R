@@ -138,15 +138,6 @@ toltal.loglik.calcu.ai4i = function(parm,
 }
 
 
-
-
-#setwd("C:/Users/linzh/Desktop/pmd/examples/ai4i")
-#source("C:/Users/linzh/Desktop/pmd/functions/myfunctions.R")
-
-
-source("/home/zhengzhi/functions/myfunctions.R")
-dyn.load("/home/zhengzhi/functions/functions.so")
-
 #data prepare
 ai4i = read.table(file = 'dat_ai4i.csv',sep = ',')
 colnames(ai4i) = c('NA','Product ID','Type','Air temperature [K]','Process temperature [K]','Rotational speed [rpm]','Torque [Nm]')
@@ -160,7 +151,9 @@ for(i in 3:6){
 }
 ai4i = ai4i[1:1000,] 
 
-#set.seed(10000)
+
+
+set.seed(10000)
 out = make.data.groups(ai4i,100,category_name = c('H','L','M'),category_column = 'Type')
 groups = out[[1]]
 count_result = out[[2]]
@@ -175,6 +168,7 @@ min(idx)
 max(idx)
 
 
+
 f = function(parm){
   toltal.loglik.calcu.ai4i(parm,
                            result_mat = count_result,
@@ -184,21 +178,39 @@ f = function(parm){
 }
 
 
-parm=c(1,1,1,1,1.8,1.625)
 
-#parm = rep(0,6)
-op = optim(
+# optim to find estimates for betas, 3 categories and 2 covariates
+# so beta(includes intercep) will be a 2*3 matrix
+
+parm=c(1,1,1,1,1.8,1.625)
+op <- optim(
   parm,
   f,
   method = "Nelder-Mead",
-  hessian = F,
+  hessian = T,
   control = list(trace = T,maxit = 30000)
 )
 op 
 
 
+# estimated beta
+beta.hat <- op$par
+
+# the hessian and inverse of hessian
+H <- op$hessian
+H.inv <- solve(H)
 
 
+# se of beta
+
+se <- sqrt(diag(H.inv))
+
+# 0.95 CI
+left.CI <- beta.hat - 1.96*se
+right.CI <- beta.hat + 1.96*se
+
+
+# calculate p matrix for all groups
 pp = list()
 covariate_name = c("Air temperature [K]","Process temperature [K]")
 category_number = 3
@@ -209,9 +221,11 @@ for(i in 1:length(groups)) {
   
 }
 
+# P matrix for group 1, 5 and 8
 pp[[1]]
 pp[[5]]
 pp[[8]]
 
 
-
+# save results
+save(ai4i, out, op, beta.hat, H, H.inv, se, left.CI, right.CI, pp, file="ai4i.RData")

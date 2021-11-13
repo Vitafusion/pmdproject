@@ -154,6 +154,7 @@ ai4i = ai4i[1:1000,]
 
 
 set.seed(10000)
+library(PoissonMultinomial)
 out = make.data.groups(ai4i,100,category_name = c('H','L','M'),category_column = 'Type')
 groups = out[[1]]
 count_result = out[[2]]
@@ -229,3 +230,5 @@ pp[[8]]
 
 # save results
 save(ai4i, out, op, beta.hat, H, H.inv, se, left.CI, right.CI, pp, file="ai4i.RData")
+
+

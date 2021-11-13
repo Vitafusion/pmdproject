@@ -21,7 +21,8 @@ dat.poi <- read.table("~/Desktop/research/pmd/pmdproject/pmdproject/accuracy res
 
 
 dat.simu <- read.table("simu.txt",sep = '\t')
-dat.simu$B <- as.factor(dat.simu$B)
+colnames(dat.simu)[3] <- 'b'
+dat.simu$b <- as.factor(dat.simu$b)
 
 ## plot functions
 base_breaks <- function(n = 10){
@@ -38,7 +39,7 @@ scaleFUN <- function(x) sprintf("%.4f", x)
 dat.norm <- dat[which(dat$method==c('N.A', 'Baseline')),]
 
 
-p3 = dat.norm %>% filter(m==3) %>% ggplot(aes(x=n, y=mae)) + 
+p3 = dat.norm %>% filter(m==3) %>% filter(n>=10 & n<=90) %>%ggplot(aes(x=n, y=mae)) + 
   geom_path(aes(color=method, linetype=method)) + 
   scale_y_continuous(trans = 'log10', breaks = base_breaks()) +labs(subtitle = 'm=3') + 
   ylab("MAE") + theme(plot.subtitle = element_text(hjust = 0.5)) +
@@ -57,7 +58,7 @@ p3 = dat.norm %>% filter(m==3) %>% ggplot(aes(x=n, y=mae)) +
 p3
 
 
-p5 = dat.norm %>% filter(m==5) %>% ggplot(aes(x=n, y=mae)) + 
+p5 = dat.norm %>% filter(m==5) %>% filter(n>=10 & n<=50) %>% ggplot(aes(x=n, y=mae)) + 
   geom_path(aes(color=method, linetype=method)) + 
   scale_y_continuous(trans = 'log10', breaks = base_breaks()) +labs(subtitle = 'm=5') + 
   ylab("MAE") + theme(plot.subtitle = element_text(hjust = 0.5)) +
@@ -76,7 +77,7 @@ p5 = dat.norm %>% filter(m==5) %>% ggplot(aes(x=n, y=mae)) +
 p5
 
 
-p7 = dat.norm %>% filter(m==7) %>% ggplot(aes(x=n, y=mae)) + 
+p7 = dat.norm %>% filter(m==7) %>% filter(n>=5 & n<=15)  %>% ggplot(aes(x=n, y=mae)) + 
   geom_path(aes(color=method, linetype=method)) + 
   scale_y_continuous(trans = 'log10', breaks = base_breaks()) +labs(subtitle = 'm=7') + 
   ylab("MAE") + theme(plot.subtitle = element_text(hjust = 0.5)) +
@@ -208,21 +209,23 @@ dev.off()
 # simulation
 
 
-p1 <- dat.simu %>% filter(n<=75) %>% filter(B==10|B==1e+05|B==1e+07) %>% ggplot() + 
-  geom_path(aes(x=n,y=err.max,colour=B,group=B,linetype=B), show.legend = T) + 
-  scale_y_continuous(trans = 'log10', breaks = base_breaks()) +labs(subtitle = 'Maximum') + 
-  ylab("error") + theme(plot.subtitle = element_text(hjust = 0.5)) +
+p1 <- dat.simu %>% filter(n<=75) %>% filter(b==10|b==1e+05|b==1e+07) %>% ggplot() + 
+  geom_path(aes(x=n,y=err.max,colour=b,group=b,linetype=b), show.legend = T) + 
+  scale_y_continuous(trans = 'log10', breaks = base_breaks()) +labs(subtitle = expression(bold(x)[m])) + 
+  ylab("AE") + theme(plot.subtitle = element_text(hjust = 0.5)) +
   theme(axis.text.x = element_text(face="bold", 
                                    size=8),
         axis.text.y = element_text(face="bold", 
                                    size=8),
         axis.title=element_text(size=10,face="bold")) 
 
-p2 <- dat.simu %>% filter(n<=75 & n!=60) %>% filter(B==10|B==1e+05|B==1e+07) %>% ggplot() + 
-  geom_path(aes(x=n,y=err.95,colour=B,group=B,linetype=B), show.legend = T) + 
+p1
+
+p2 <- dat.simu %>% filter(n<=75 & n!=60) %>% filter(b==10|b==1e+05|b==1e+07) %>% ggplot() + 
+  geom_path(aes(x=n,y=err.95,colour=b,group=b,linetype=b), show.legend = T) + 
   scale_y_continuous(trans = 'log10', breaks = base_breaks()) +
-  labs(subtitle = '0.95 Quantile') + 
-  ylab("error") + theme(plot.subtitle = element_text(hjust = 0.5)) + 
+  labs(subtitle = expression(bold(x)[0.95])) + 
+  ylab("AE") + theme(plot.subtitle = element_text(hjust = 0.5)) + 
   theme(axis.text.x = element_text(face="bold", 
                                    size=8),
         axis.text.y = element_text(face="bold", 
@@ -230,10 +233,10 @@ p2 <- dat.simu %>% filter(n<=75 & n!=60) %>% filter(B==10|B==1e+05|B==1e+07) %>%
         axis.title=element_text(size=10,face="bold")) 
 
 
-p3 <- dat.simu  %>% filter(n<=75) %>% filter(B==10|B==1e+05|B==1e+07) %>% ggplot() + 
-  geom_path(aes(x=n,y=err.90,colour=B,group=B,linetype=B), show.legend = T) + 
-  scale_y_continuous(trans = 'log10', breaks = base_breaks()) +labs(subtitle = '0.90 Quantile') + 
-  ylab("error") + theme(plot.subtitle = element_text(hjust = 0.5))  + 
+p3 <- dat.simu  %>% filter(n<=75) %>% filter(b==10|b==1e+05|b==1e+07) %>% ggplot() + 
+  geom_path(aes(x=n,y=err.90,colour=b,group=b,linetype=b), show.legend = T) + 
+  scale_y_continuous(trans = 'log10', breaks = base_breaks()) +labs(subtitle = expression(bold(x)[0.9])) + 
+  ylab("AE") + theme(plot.subtitle = element_text(hjust = 0.5))  + 
   theme(axis.text.x = element_text(face="bold", 
                                    size=8),
         axis.text.y = element_text(face="bold", 

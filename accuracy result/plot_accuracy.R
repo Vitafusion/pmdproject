@@ -107,7 +107,7 @@ ggarrange(p3,p5,p7, ncol=3, nrow=1, common.legend = TRUE, legend="bottom")
 p3 = dat %>% filter(m==3) %>% ggplot() + 
   geom_path(aes(x=n,y=mae,colour=method,group=method,linetype=method), show.legend = T) + 
   scale_y_continuous(trans = 'log10', breaks = base_breaks()) +labs(subtitle = 'm=3') + 
-  ylab("MAE") + theme(plot.subtitle = element_text(hjust = 0.5))
+  ylab("MAE") + theme(plot.subtitle = element_text(hjust = 0.5)) +
 
 p3
 
@@ -210,8 +210,8 @@ dev.off()
 
 
 p1 <- dat.simu %>% filter(n<=75) %>% filter(b==10|b==1e+05|b==1e+07) %>% ggplot() + 
-  geom_path(aes(x=n,y=err.max,colour=b,group=b,linetype=b), show.legend = T) + 
-  scale_y_continuous(trans = 'log10', breaks = base_breaks()) +labs(subtitle = expression(bold(x)[m])) + 
+  geom_path(aes(x=n,y=err.max,colour=b,group=b,linetype=b), show.legend = T) + labs(color="Number of Repeats", linetype='Number of Repeats') + 
+  scale_y_continuous(trans = 'log10', breaks = base_breaks()) +labs(subtitle = expression(bold(x)[mode])) + 
   ylab("AE") + theme(plot.subtitle = element_text(hjust = 0.5)) +
   theme(axis.text.x = element_text(face="bold", 
                                    size=8),
@@ -219,10 +219,11 @@ p1 <- dat.simu %>% filter(n<=75) %>% filter(b==10|b==1e+05|b==1e+07) %>% ggplot(
                                    size=8),
         axis.title=element_text(size=10,face="bold")) 
 
+
 p1
 
 p2 <- dat.simu %>% filter(n<=75 & n!=60) %>% filter(b==10|b==1e+05|b==1e+07) %>% ggplot() + 
-  geom_path(aes(x=n,y=err.95,colour=b,group=b,linetype=b), show.legend = T) + 
+  geom_path(aes(x=n,y=err.95,colour=b,group=b,linetype=b), show.legend = T) + labs(color="Number of Repeats", linetype='Number of Repeats') +
   scale_y_continuous(trans = 'log10', breaks = base_breaks()) +
   labs(subtitle = expression(bold(x)[0.95])) + 
   ylab("AE") + theme(plot.subtitle = element_text(hjust = 0.5)) + 
@@ -234,7 +235,7 @@ p2 <- dat.simu %>% filter(n<=75 & n!=60) %>% filter(b==10|b==1e+05|b==1e+07) %>%
 
 
 p3 <- dat.simu  %>% filter(n<=75) %>% filter(b==10|b==1e+05|b==1e+07) %>% ggplot() + 
-  geom_path(aes(x=n,y=err.90,colour=b,group=b,linetype=b), show.legend = T) + 
+  geom_path(aes(x=n,y=err.90,colour=b,group=b,linetype=b), show.legend = T) + labs(color="Number of Repeats", linetype='Number of Repeats') +
   scale_y_continuous(trans = 'log10', breaks = base_breaks()) +labs(subtitle = expression(bold(x)[0.9])) + 
   ylab("AE") + theme(plot.subtitle = element_text(hjust = 0.5))  + 
   theme(axis.text.x = element_text(face="bold", 

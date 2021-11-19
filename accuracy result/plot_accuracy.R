@@ -36,17 +36,17 @@ scaleFUN <- function(x) sprintf("%.4f", x)
 
 ## normal
 
-dat.norm <- dat[which(dat$method==c('N.A', 'Baseline')),]
+dat.norm <- dat %>% filter(method=='N.A' | method=='Baseline')
 
 
 p3 = dat.norm %>% filter(m==3) %>% filter(n>=10 & n<=90) %>%ggplot(aes(x=n, y=mae)) + 
   geom_path(aes(color=method, linetype=method)) + 
   scale_y_continuous(trans = 'log10', breaks = base_breaks()) +labs(subtitle = 'm=3') + 
   ylab("MAE") + theme(plot.subtitle = element_text(hjust = 0.5)) +
-  scale_color_manual(name="method",
+  scale_color_manual(name="Method",
                      labels=c("Baseline", "NA"),
                      values=c("red","blue")) +
-  scale_linetype_manual(name="method",
+  scale_linetype_manual(name="Method",
                         labels=c("Baseline", "NA"),
                         values=c("dashed", "solid")) + 
   theme(axis.text.x = element_text(face="bold", 
@@ -62,10 +62,10 @@ p5 = dat.norm %>% filter(m==5) %>% filter(n>=10 & n<=50) %>% ggplot(aes(x=n, y=m
   geom_path(aes(color=method, linetype=method)) + 
   scale_y_continuous(trans = 'log10', breaks = base_breaks()) +labs(subtitle = 'm=5') + 
   ylab("MAE") + theme(plot.subtitle = element_text(hjust = 0.5)) +
-  scale_color_manual(name="method",
+  scale_color_manual(name="Method",
                      labels=c("Baseline", "NA"),
                      values=c("red","blue")) +
-  scale_linetype_manual(name="method",
+  scale_linetype_manual(name="Method",
                         labels=c("Baseline", "NA"),
                         values=c("dashed", "solid")) + 
   theme(axis.text.x = element_text(face="bold", 
@@ -77,14 +77,14 @@ p5 = dat.norm %>% filter(m==5) %>% filter(n>=10 & n<=50) %>% ggplot(aes(x=n, y=m
 p5
 
 
-p7 = dat.norm %>% filter(m==7) %>% filter(n>=5 & n<=15)  %>% ggplot(aes(x=n, y=mae)) + 
+p7 = dat.norm %>% filter(m==7, n>=3 & n <= 15) %>% ggplot(aes(x=n, y=mae)) + 
   geom_path(aes(color=method, linetype=method)) + 
   scale_y_continuous(trans = 'log10', breaks = base_breaks()) +labs(subtitle = 'm=7') + 
   ylab("MAE") + theme(plot.subtitle = element_text(hjust = 0.5)) +
-  scale_color_manual(name="method",
+  scale_color_manual(name="Method",
                      labels=c("Baseline", "NA"),
                      values=c("red","blue")) +
-  scale_linetype_manual(name="method",
+  scale_linetype_manual(name="Method",
                         labels=c("Baseline", "NA"),
                         values=c("dashed", "solid")) + 
   theme(axis.text.x = element_text(face="bold", 
@@ -210,8 +210,10 @@ dev.off()
 
 
 p1 <- dat.simu %>% filter(n<=75) %>% filter(b==10|b==1e+05|b==1e+07) %>% ggplot() + 
-  geom_path(aes(x=n,y=err.max,colour=b,group=b,linetype=b), show.legend = T) + labs(color="Number of Repeats", linetype='Number of Repeats') + 
-  scale_y_continuous(trans = 'log10', breaks = base_breaks()) +labs(subtitle = expression(bold(x)[mode])) + 
+  geom_path(aes(x=n,y=err.max,colour=b,group=b,linetype=b), show.legend = T) + 
+  labs(color="Number of Repeats", linetype='Number of Repeats') + 
+  scale_y_log10(breaks = trans_breaks("log10", function(x) 2*10^x)) + 
+  labs(subtitle = expression(bold(x)[mode])) + 
   ylab("AE") + theme(plot.subtitle = element_text(hjust = 0.5)) +
   theme(axis.text.x = element_text(face="bold", 
                                    size=8),
@@ -224,7 +226,7 @@ p1
 
 p2 <- dat.simu %>% filter(n<=75 & n!=60) %>% filter(b==10|b==1e+05|b==1e+07) %>% ggplot() + 
   geom_path(aes(x=n,y=err.95,colour=b,group=b,linetype=b), show.legend = T) + labs(color="Number of Repeats", linetype='Number of Repeats') +
-  scale_y_continuous(trans = 'log10', breaks = base_breaks()) +
+  scale_y_log10(breaks = trans_breaks("log10", function(x) 2*10^x)) +
   labs(subtitle = expression(bold(x)[0.95])) + 
   ylab("AE") + theme(plot.subtitle = element_text(hjust = 0.5)) + 
   theme(axis.text.x = element_text(face="bold", 
@@ -233,10 +235,14 @@ p2 <- dat.simu %>% filter(n<=75 & n!=60) %>% filter(b==10|b==1e+05|b==1e+07) %>%
                                    size=8),
         axis.title=element_text(size=10,face="bold")) 
 
+p2
+
 
 p3 <- dat.simu  %>% filter(n<=75) %>% filter(b==10|b==1e+05|b==1e+07) %>% ggplot() + 
-  geom_path(aes(x=n,y=err.90,colour=b,group=b,linetype=b), show.legend = T) + labs(color="Number of Repeats", linetype='Number of Repeats') +
-  scale_y_continuous(trans = 'log10', breaks = base_breaks()) +labs(subtitle = expression(bold(x)[0.9])) + 
+  geom_path(aes(x=n,y=err.90,colour=b,group=b,linetype=b), show.legend = T) + 
+  labs(color="Number of Repeats", linetype='Number of Repeats') +
+  scale_y_log10(breaks = trans_breaks("log10", function(x) 2*10^x)) +
+  labs(subtitle = expression(bold(x)[0.9])) + 
   ylab("AE") + theme(plot.subtitle = element_text(hjust = 0.5))  + 
   theme(axis.text.x = element_text(face="bold", 
                                    size=8),

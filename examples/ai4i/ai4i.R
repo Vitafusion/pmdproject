@@ -53,11 +53,15 @@ make.data.groups = function(dat, groups_number,category_name=c("setosa","versico
 
 cal_pmatrix = function(parm, x_mat, cat_number){
   x_mat = as.matrix(x_mat)
-  n = ncol(x_mat)
-  x_mat = cbind(matrix(1, nrow = nrow(x_mat),ncol = 1), x_mat)
+  
+  n = ncol(x_mat) - 1
+  #x_mat = cbind(matrix(1, nrow = nrow(x_mat),ncol = 1), x_mat)
+  
   m = cat_number
   parm = matrix(parm,n+1,m-1)
+  
   #P = matrix(0, nrow = nrow(x_mat), ncol = category_number)
+  
   P = exp(x_mat%*%parm)/(rowSums(exp(x_mat%*%parm))+1)
   P = cbind(P,1/(rowSums(exp(x_mat%*%parm))+1))
   for(i in 1:nrow(P)){
@@ -87,30 +91,6 @@ point.loglik.calcu = function(pp,count_result){
 
 
 
-toltal.loglik.calcu = function(parm, 
-                               result_mat = count_result, 
-                               group = groups,
-                               cat_number = category_number,
-                               covar.index) {
-  minus_log_lik = 0
-  for (i in 1:nrow(result_mat)) {
-    x = group[[i]]
-    x_mat = x[,covar.index]
-    n = nrow(x)
-    result = result_mat[i,]
-    P = cal_pmatrix(parm, x_mat, cat_number)
-    prob = point.loglik.calcu(P,result)
-    if(prob == -Inf)
-      prob = -10000
-    minus_log_lik = minus_log_lik - prob
-    #browser()
-  }
-  #browser()
-  return(minus_log_lik)
-}
-
-
-
 toltal.loglik.calcu.ai4i = function(parm,
                                     result_mat = count_result,
                                     group = groups,
@@ -119,8 +99,16 @@ toltal.loglik.calcu.ai4i = function(parm,
   minus_log_lik = 0
   for (i in 1:length(result_mat)) {
     x = group[[i]]
-    x_mat = x[,covariate_name]
-    n = nrow(x)
+    if(is.na(covariate_name)) {
+    x_mat = matrix(1, nrow = nrow(x), ncol = 1)
+    } else { 
+      x_mat = x[,covariate_name] 
+    } 
+    
+    x_mat = as.matrix(x_mat)
+    x_mat = cbind(matrix(1, nrow = nrow(x_mat),ncol = 1), x_mat)
+
+
     result = result_mat[[i]]
     P = cal_pmatrix(parm, x_mat, cat_number)
     prob = point.loglik.calcu(P,result)
@@ -141,7 +129,8 @@ toltal.loglik.calcu.ai4i = function(parm,
 #data prepare
 raw.ai4i = read.table(file = 'ai4i2020.csv',sep = ',')
 colname.ai4i <- raw.ai4i[1,]
-colnames(raw.ai4i) <- colname.ai4i
+colnames(raw.ai4i) <- c('UDI', 'Product ID', 'Type', 'Air temperature [K]', 'Process temperature [K]',
+'Rotational speed [rpm]', 'Torque [Nm]', 'Tool wear [min]', 'Machine failure', 'TWF', 'HDF', 'PWF', 'OSF', 'RNF')
 raw.ai4i <- raw.ai4i[-1,]
 
 raw.ai4i[,4:14] <- apply(raw.ai4i[,4:14], 2, as.numeric)
@@ -263,50 +252,51 @@ for (i in 1:nrow(rule.group)) {
 
 
 
-set.seed(10000)
+
+covariates <- c("Air temperature [K]", "Process temperature [K]", "Rotational speed [rpm]", "Torque [Nm]")
+seed <- 1
+covidx=c(1,2,3,4,5)
+
+
+## read in the command line arguments
+## run with: R CMD BATCH '--args seed=1 covidx=c(1,2,3,4,5)' ai4i.R
+args <- commandArgs(TRUE)
+if(length(args) > 0) 
+    for(i in 1:length(args)) 
+        eval(parse(text=args[[i]]))
+
+## print seed
+cat("covariates index: ", covidx, "\n", sep="")
+cat("seed is ", seed, "\n", sep="")
+
+
+covname <- c()
+for(i in 1:length(covidx)){
+  if(covidx[i]==0) {
+    covname <- NA
+  } else { 
+    covname <- c(covname, covariates[covidx[i]])
+  }
+}
+
+cat("covname: ", covname, "\n", sep="")
+
+
+
 library(PoissonMultinomial)
-out = make.data.groups(ai4i,100,category_name = c('H','L','M'),category_column = 'Type')
-groups = out[[1]]
-count_result = out[[2]]
-category_number = 3
-
-idx = c()
-for (i in 1:length(groups)) {
-  idx[i] = nrow(groups[[i]])
-}
-
-min(idx)
-max(idx)
-
-
-
-f = function(parm){
-  toltal.loglik.calcu.ai4i(parm,
-                           result_mat = count_result,
-                           group = groups,
-                           cat_number = category_number,
-                           covariate_name = c("Air temperature [K]",
-                                              "Process temperature [K]",
-                                              "Rotational speed [rpm]",
-                                              "Torque [Nm]"))
-}
-
 f = function(parm){
   toltal.loglik.calcu.ai4i(parm,
                            result_mat = res.count,
                            group = groups,
                            cat_number = 3,
-                           covariate_name = c("Air temperature [K]",
-                                              "Process temperature [K]",
-                                              "Rotational speed [rpm]",
-                                              "Torque [Nm]"))
+                           covariate_name = covname)
 }
 
 
-# optim to find estimates for betas, 3 categories and 4 covariates
-# so beta(includes intercep) will be a 2*5 matrix
 
-parm=c(7.142795, -3.243091,  1.927554,  3.688145, -2.688194,  1.608610, 1.5, 1.5, 1.5, 1.5)
+# optim to find estimates for betas, m categories and k covariates
+# so beta(including intercep) will be a (m-1)*(k+1) matrix
+parm <- rep(1, 2*(length(covname)+1))
 op <- optim(
   parm,
   f,
@@ -317,46 +307,48 @@ op <- optim(
 op 
 
 
-#parm <- c(7.142795, -3.243091,  1.927554,  3.688145, -2.688194,  1.608610)
+# #parm <- c(7.142795, -3.243091,  1.927554,  3.688145, -2.688194,  1.608610)
 
-# estimated beta
-beta.hat <- op$par
+# # estimated beta
+# beta.hat <- op$par
 
-# the hessian and inverse of hessian
-H <- op$hessian
-H.inv <- solve(H)
-
-
-# se of beta
-
-se <- sqrt(diag(H.inv))
-
-# 0.95 CI
-left.CI <- beta.hat - 1.96*se
-right.CI <- beta.hat + 1.96*se
+# # the hessian and inverse of hessian
+# H <- op$hessian
+# H.inv <- solve(H)
 
 
-# calculate p matrix for all groups
-pp = list()
-covariate_name = c("Air temperature [K]",
-                   "Process temperature [K]",
-                   "Rotational speed [rpm]",
-                   "Torque [Nm]")
-category_number = 3
-for(i in 1:length(groups)) {
-  x = groups[[i]]
-  x = x[,covariate_name]
-  pp[[i]]= cal_pmatrix(op$par, x, category_number)
+# # se of beta
+
+# se <- sqrt(diag(H.inv))
+
+# # 0.95 CI
+# left.CI <- beta.hat - 1.96*se
+# right.CI <- beta.hat + 1.96*se
+
+
+# # calculate p matrix for all groups
+# pp = list()
+# covariate_name = c("Air temperature [K]",
+#                    "Process temperature [K]",
+#                    "Rotational speed [rpm]",
+#                    "Torque [Nm]")
+# category_number = 3
+# for(i in 1:length(groups)) {
+#   x = groups[[i]]
+#   x = x[,covariate_name]
+#   pp[[i]]= cal_pmatrix(op$par, x, category_number)
   
-}
+# }
 
-# P matrix for group 1, 5 and 8
-pp[[1]]
-pp[[5]]
-pp[[8]]
+# # P matrix for group 1, 5 and 8
+# pp[[1]]
+# pp[[5]]
+# pp[[8]]
 
 
 # save results
-save(ai4i, out, op, beta.hat, H, H.inv, se, left.CI, right.CI, pp, file="ai4i2.RData")
+
+expr <- paste0('ai4i_', seed, '.RData')
+save(op, beta.hat, H, file=expr)
 
 

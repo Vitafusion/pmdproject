@@ -1,0 +1,81 @@
+#!/bin/sh
+#SBATCH --time=144:00:00
+#SBATCH -A bdpa
+#SBATCH -p normal_q
+#SBATCH -N 1
+#SBATCH --exclusive
+#SBATCH --mail-user=zhengzhi@vt.edu
+#SBATCH --mail-type=FAIL,END
+##SBATCH --requeue
+
+cd /home/zhengzhi/PMD/ai4i
+
+echo "$( date ): Starting ai4i"
+
+R CMD BATCH "--args seed=1 covidx=c(1,2,3,4)
+" ai4i.R ai4i_1.Rout &
+
+wait
+
+R CMD BATCH "--args seed=2 covidx=c(1,2,3)
+" ai4i.R ai4i_2.Rout &
+wait
+
+R CMD BATCH "--args seed=3 covidx=c(1,2)
+" ai4i.R ai4i_3.Rout &
+wait
+
+R CMD BATCH "--args seed=4 covidx=c(1)
+" ai4i.R ai4i_4.Rout &
+wait
+
+R CMD BATCH "--args seed=5 covidx=c(0)
+" ai4i.R ai4i_5.Rout &
+wait
+
+R CMD BATCH "--args seed=6 covidx=c(1)
+" ai4i.R ai4i_6.Rout &
+wait
+
+R CMD BATCH "--args seed=7 covidx=c(2)
+" ai4i.R ai4i_7.Rout &
+wait
+
+R CMD BATCH "--args seed=8 covidx=c(3)
+" ai4i.R ai4i_8.Rout &
+wait
+
+R CMD BATCH "--args seed=9 covidx=c(4)
+" ai4i.R ai4i_9.Rout &
+wait
+
+R CMD BATCH "--args seed=10 covidx=c(2,3)
+" ai4i.R ai4i_10.Rout &
+wait
+
+R CMD BATCH "--args seed=11 covidx=c(2,4)
+" ai4i.R ai4i_11.Rout &
+wait
+
+R CMD BATCH "--args seed=12 covidx=c(2,3,4)
+" ai4i.R ai4i_12.Rout &
+wait
+
+R CMD BATCH "--args seed=13 covidx=c(3,4)
+" ai4i.R ai4i_13.Rout &
+wait
+
+R CMD BATCH "--args seed=14 covidx=c(1,3)
+" ai4i.R ai4i_14.Rout &
+wait
+
+R CMD BATCH "--args seed=15 covidx=c(1,4)
+" ai4i.R ai4i_15.Rout &
+wait
+
+R CMD BATCH "--args seed=16 covidx=c(1,3,4)
+" ai4i.R ai4i_16.Rout &
+wait
+
+echo "$( date ): Finished ai4i"
+

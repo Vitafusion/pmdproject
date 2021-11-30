@@ -51,11 +51,11 @@ make.data.groups = function(dat, groups_number,category_name=c("setosa","versico
 
 
 
-cal_pmatrix = function(parm, x_mat, category_number){
+cal_pmatrix = function(parm, x_mat, cat_number){
   x_mat = as.matrix(x_mat)
   n = ncol(x_mat)
   x_mat = cbind(matrix(1, nrow = nrow(x_mat),ncol = 1), x_mat)
-  m = category_number
+  m = cat_number
   parm = matrix(parm,n+1,m-1)
   #P = matrix(0, nrow = nrow(x_mat), ncol = category_number)
   P = exp(x_mat%*%parm)/(rowSums(exp(x_mat%*%parm))+1)
@@ -117,11 +117,11 @@ toltal.loglik.calcu.ai4i = function(parm,
                                     cat_number = category_number,
                                     covariate_name = c("Air temperature [K]","Process temperature [K]","Rotational speed [rpm]")) {
   minus_log_lik = 0
-  for (i in 1:nrow(result_mat)) {
+  for (i in 1:length(result_mat)) {
     x = group[[i]]
     x_mat = x[,covariate_name]
     n = nrow(x)
-    result = result_mat[i,]
+    result = result_mat[[i]]
     P = cal_pmatrix(parm, x_mat, cat_number)
     prob = point.loglik.calcu(P,result)
     if(prob == -Inf){
@@ -139,17 +139,127 @@ toltal.loglik.calcu.ai4i = function(parm,
 
 
 #data prepare
-ai4i = read.table(file = 'dat_ai4i.csv',sep = ',')
-colnames(ai4i) = c('NA','Product ID','Type','Air temperature [K]','Process temperature [K]','Rotational speed [rpm]','Torque [Nm]')
-#colnames(ai4i) = ai4i[1,]
-ai4i = ai4i[-1,2:7]
-ai4i$Type=as.factor(ai4i$Type)
-for(i in 3:6){
-  ai4i[,i] = as.character(ai4i[,i])
-  ai4i[,i] = as.numeric(ai4i[,i])
-  ai4i[,i] = scale(ai4i[,i])
+raw.ai4i = read.table(file = 'ai4i2020.csv',sep = ',')
+colname.ai4i <- raw.ai4i[1,]
+colnames(raw.ai4i) <- colname.ai4i
+raw.ai4i <- raw.ai4i[-1,]
+
+raw.ai4i[,4:14] <- apply(raw.ai4i[,4:14], 2, as.numeric)
+raw.ai4i[,9:14] <- apply(raw.ai4i[,9:14], 2, as.numeric)
+#ai4i <- raw.ai4i[which(raw.ai4i$`Machine failure`==1),]
+ai4i <- raw.ai4i
+
+ai4i$`Air temperature [K]` <- scale(ai4i$`Air temperature [K]`)
+ai4i$`Process temperature [K]` <- scale(ai4i$`Process temperature [K]`)
+ai4i$`Rotational speed [rpm]` <- scale(ai4i$`Rotational speed [rpm]`)
+ai4i$`Torque [Nm]` <- scale(ai4i$`Torque [Nm]`)
+
+
+
+# grouping based on unique combination of `Type` and `Tool wear [min]`
+rule.group <- unique(ai4i[,c('Type','Tool wear [min]')])
+groups <- list()
+k <- 1
+for(i in 1:nrow(rule.group)){
+  type <- rule.group[i,1]
+  toolwear <- rule.group[i,2]
+  idx <- which(ai4i$Type==type & ai4i$`Tool wear [min]`==toolwear)
+  groups[[k]] <- ai4i[idx,]
+  k <- k+1
 }
-ai4i = ai4i[1:1000,] 
+
+
+# First Option
+# result count for each group
+# category 1: (TWF=1 OR OSF=1) AND (HDF=PWF=0)
+# category 2: (TWF=0 AND OSF=0) AND (HDF=1 or PWF=1)
+# category 3: else (including non failure)
+
+res.count <- list()
+for (i in 1:nrow(rule.group)) {
+  if(nrow(groups[[i]]) != 1)
+    for(j in nrow(groups[[i]])){
+      temp.dat <- groups[[i]]
+      c1 <- c2 <- c3<- 0
+      for(k in 1:nrow(temp.dat)){
+        temp <- temp.dat[k,]
+        if((temp$TWF==1 | temp$OSF==1) & temp$HDF==0 & temp$PWF==0)
+        c1 <- c1+1
+        else if(temp$TWF==0 & temp$OSF==0 & (temp$HDF==1 | temp$PWF==1))
+          c2 <- c2+1
+        else
+          c3 <- c3+1
+      }
+      
+    }
+  res.count[[i]] <- c(c1,c2,c3)
+}
+
+
+# Second Option
+# result count for each group
+# category 1: 0 failure mode
+# category 2: 1 failure modes
+# category 3: 1+ failure modes
+
+res.count <- list()
+for (i in 1:nrow(rule.group)) {
+  #if(nrow(groups[[i]]) != 1)
+      temp.dat <- groups[[i]]
+      c1 <- c2 <- c3 <- 0
+      for(k in 1:nrow(temp.dat)){
+        twf <- osf <- hdf <- pwf <- rnf <- 0
+        temp <- temp.dat[k,]
+        if(temp$RNF==1)
+          rnf <- 1
+        if(temp$TWF==1)
+          twf <- 1
+        if(temp$OSF==1)
+          osf <- 1
+        if(temp$HDF==1)
+          hdf <- 1
+        if(temp$PWF==1)
+          pwf <- 1
+        
+        s <- twf+osf+hdf+pwf+rnf
+        if (s>=2) {
+          c3 <- c3 + 1
+        } else if (s==1) {
+          c2 <- c2+1
+        } else {
+          c1 <- c1+1
+        } 
+      }
+  #if(c1+c2+c3!= nrow(groups[[i]]))
+  # cat(c1+c2+c3,",", nrow(groups[[i]])," , ",i, "\n")
+  res.count[[i]] <- c(c1,c2,c3)
+}
+
+
+# test: find out the group that has largest c2 or c3
+# c1.res <- c2.res <-c3.res <- c()
+# s <- 0
+# for(i in 1:nrow(rule.group)){
+#   c1.res <- c(c1.res, res.count[[i]][1])
+#   c2.res <- c(c2.res, res.count[[i]][2])
+#   c3.res <- c(c3.res, res.count[[i]][3])
+#   s <- s + sum(res.count[[i]]) 
+# }
+# 
+# 
+# s <- 0
+# for(i in 1:nrow(rule.group)){
+#   s <- s + sum(nrow(groups[[i]])) 
+# }
+
+# ai4i = ai4i[-1,2:7]
+# ai4i$Type=as.factor(ai4i$Type)
+# for(i in 3:6){
+#   ai4i[,i] = as.character(ai4i[,i])
+#   ai4i[,i] = as.numeric(ai4i[,i])
+#   ai4i[,i] = scale(ai4i[,i])
+# }
+# ai4i = ai4i[1:1000,] 
 
 
 
@@ -175,15 +285,28 @@ f = function(parm){
                            result_mat = count_result,
                            group = groups,
                            cat_number = category_number,
-                           covariate_name = c("Air temperature [K]","Process temperature [K]"))
+                           covariate_name = c("Air temperature [K]",
+                                              "Process temperature [K]",
+                                              "Rotational speed [rpm]",
+                                              "Torque [Nm]"))
+}
+
+f = function(parm){
+  toltal.loglik.calcu.ai4i(parm,
+                           result_mat = res.count,
+                           group = groups,
+                           cat_number = 3,
+                           covariate_name = c("Air temperature [K]",
+                                              "Process temperature [K]",
+                                              "Rotational speed [rpm]",
+                                              "Torque [Nm]"))
 }
 
 
+# optim to find estimates for betas, 3 categories and 4 covariates
+# so beta(includes intercep) will be a 2*5 matrix
 
-# optim to find estimates for betas, 3 categories and 2 covariates
-# so beta(includes intercep) will be a 2*3 matrix
-
-parm=c(1,1,1,1,1.8,1.625)
+parm=c(7.142795, -3.243091,  1.927554,  3.688145, -2.688194,  1.608610, 1.5, 1.5, 1.5, 1.5)
 op <- optim(
   parm,
   f,
@@ -193,6 +316,8 @@ op <- optim(
 )
 op 
 
+
+#parm <- c(7.142795, -3.243091,  1.927554,  3.688145, -2.688194,  1.608610)
 
 # estimated beta
 beta.hat <- op$par
@@ -213,7 +338,10 @@ right.CI <- beta.hat + 1.96*se
 
 # calculate p matrix for all groups
 pp = list()
-covariate_name = c("Air temperature [K]","Process temperature [K]")
+covariate_name = c("Air temperature [K]",
+                   "Process temperature [K]",
+                   "Rotational speed [rpm]",
+                   "Torque [Nm]")
 category_number = 3
 for(i in 1:length(groups)) {
   x = groups[[i]]
@@ -229,6 +357,6 @@ pp[[8]]
 
 
 # save results
-save(ai4i, out, op, beta.hat, H, H.inv, se, left.CI, right.CI, pp, file="ai4i.RData")
+save(ai4i, out, op, beta.hat, H, H.inv, se, left.CI, right.CI, pp, file="ai4i2.RData")
 
 

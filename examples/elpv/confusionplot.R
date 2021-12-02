@@ -163,15 +163,15 @@ for(i in 1:length(trueclass)){
       cil = 0
     }
     ciu = sub$name[max(which(probs<=0.975))]
-    barplot(value~name, data = sub, ylim = c(0,0.4), axes = F)
+    barplot(value~name, data = sub, ylim = c(0,0.4), axes = F, font.axis= 1, cex.names=1.5)
     corners = par("usr") #Gets the four corners of plot area (x1, x2, y1, y2)
     par(xpd = TRUE) #Draw outside plot area
-    text(x = mean(corners[1:2]), y = 0.35, paste("mean =", round(ex)))
+    text(x = mean(corners[1:2]), y = 0.3, paste("mean =", round(ex)), cex=1.4)
     # cil = ex - 1.96*sqrt(var)
     # ciu = ex + 1.96*sqrt(var)
-    text(x = mean(corners[1:2])+1, y = 0.3, paste("[", round(cil,2), ",",round(ciu,2),"]"))
+    text(x = mean(corners[1:2])+1.2, y = 0.25, paste("[", round(cil,2), ",",round(ciu,2),"]"), cex=1.3)
     if(j == 1){
-      axis(2)
+      axis(2, cex.axis=1.5)
     }
     if(i == 1){
       mtext(predclass[j], side = 3,line = 1, font=2, cex=1.3)
@@ -183,10 +183,10 @@ for(i in 1:length(trueclass)){
       #mtext(trueclass[i], side = 4)
     }
     if(j == 1 & i == 2){
-      mtext(text = expression(bold("Probability")),side=2, line = 2, adj = -1, cex=1.2)
+      mtext(text = expression(bold("Probability")), side=2, line = 3, adj = -1, cex=1.2)
     }
     if(i == 4 & j == 2){
-      mtext(text = expression(bold("Count")),side=1, adj =1.2,line = 2.5, cex=1.2)
+      mtext(text = expression(bold("Count")),side=1, adj =1.2,line = 3, cex=1.2)
     }
   }
 }

@@ -182,14 +182,26 @@ for(i in 1:nrow(ai4i)){
 
 ai4i <- ai4i[which(ai4i$bool==0),]
 
-# library(dplyr)
-# plot of distribution for each category
-# h1 <- ai4i[which(ai4i$TWF==1 | ai4i$OSF==1),]
-# h2 <- ai4i[which(ai4i$HDF==1 | ai4i$PWF==1),]
-# h3 <- setdiff(ai4i,rbind(h1,h2))
-# mat.hist <- matrix(c(nrow(h1), nrow(h2), nrow(h3)), nrow=1, byrow = T)
-# colnames(mat.hist) <- c('TWF_OSF','HDF_PWF','other')
-# plot(mat.hist[1,])
+library(dplyr)
+#plot of distribution for each category
+h1 <- ai4i[which(ai4i$TWF==1 | ai4i$OSF==1),]
+h2 <- ai4i[which(ai4i$HDF==1 | ai4i$PWF==1),]
+h3 <- setdiff(ai4i,rbind(h1,h2))
+mat.hist <- matrix(c(nrow(h1), nrow(h2), nrow(h3)), nrow=1, byrow = T)
+colnames(mat.hist) <- c('TWF_OSF','HDF_PWF','other')
+plot(mat.hist[1,])
+
+
+t1 <- mat.hist[1,]
+t2 <- c('TWF_OSF','HDF_PWF','other')
+mat <- t(rbind(t1,t2))
+mat <- as.data.frame(mat)
+mat$t1 <- as.numeric(mat$t1)
+colnames(mat) <- c('counts', 'category')
+
+library(ggplot2)
+ggplot(mat, aes(category, counts)) +
+  geom_bar(stat = 'identity')   
 
 # generateing result counts
 res.count <- list()

@@ -58,7 +58,7 @@ cal_pmatrix = function(parm, x_mat, cat_number){
   #x_mat = cbind(matrix(1, nrow = nrow(x_mat),ncol = 1), x_mat)
   
   m = cat_number
-  parm = matrix(parm,n+1,m-1)
+  parm = matrix(parm,n+1,m-1, byrow=T)
   
   #P = matrix(0, nrow = nrow(x_mat), ncol = category_number)
   
@@ -157,24 +157,54 @@ for(i in 1:nrow(rule.group)){
   k <- k+1
 }
 
+# Zero options
+# result counts for each group
+# data clean: remove all units that have mixed failures of category 1 and 2
+# category 1: (TWF=1 or OSF=1) no others
+# category 2: (HDF=1 or PWF=1) no others
+# category 3: censored (non failure and others)
 
-# First Option
-# result count for each group
-# category 1: (TWF=1 OR OSF=1) AND (HDF=PWF=0)
-# category 2: (TWF=0 AND OSF=0) AND (HDF=1 or PWF=1)
-# category 3: else (including non failure)
 
+# data clean
+ai4i$bool <- rep(0, nrow(ai4i))
+for(i in 1:nrow(ai4i)){
+  temp <- ai4i[i,c('TWF','HDF','PWF','OSF')]
+  con1 <- sum(temp)>2
+  con2 <- (temp$TWF==1 & temp$HDF==1)
+  con3 <- (temp$TWF==1 & temp$PWF==1)
+  con4 <- (temp$OSF==1 & temp$HDF==1)
+  con5 <- (temp$OSF==1 & temp$PWF==1)
+  cond <- c(con1, con2, con3, con4, con5)
+  
+  if(any(cond)==T)
+    ai4i$bool[i] <- 1
+}
+
+ai4i <- ai4i[which(ai4i$bool==0),]
+
+library(dplyr)
+# plot of distribution for each category
+h1 <- ai4i[which(ai4i$TWF==1 | ai4i$OSF==1),]
+h2 <- ai4i[which(ai4i$HDF==1 | ai4i$PWF==1),]
+h3 <- setdiff(ai4i,rbind(h1,h2))
+
+mat.hist <- matrix(c(nrow(h1), nrow(h2), nrow(h3)), nrow=1, byrow = T)
+colnames(mat.hist) <- c('TWF_OSF','HDF_PWF','other')
+
+plot(mat.hist[1,])
+
+# generateing result counts
 res.count <- list()
 for (i in 1:nrow(rule.group)) {
   if(nrow(groups[[i]]) != 1)
     for(j in nrow(groups[[i]])){
       temp.dat <- groups[[i]]
-      c1 <- c2 <- c3<- 0
+      c1 <- c2 <- c3 <- 0
       for(k in 1:nrow(temp.dat)){
         temp <- temp.dat[k,]
-        if((temp$TWF==1 | temp$OSF==1) & temp$HDF==0 & temp$PWF==0)
-        c1 <- c1+1
-        else if(temp$TWF==0 & temp$OSF==0 & (temp$HDF==1 | temp$PWF==1))
+        if(temp$TWF==1 | temp$OSF==1)
+          c1 <- c1+1
+        else if(temp$HDF==1 | temp$PWF==1)
           c2 <- c2+1
         else
           c3 <- c3+1
@@ -185,44 +215,73 @@ for (i in 1:nrow(rule.group)) {
 }
 
 
+ 
+
+# First Option
+# result count for each group
+# category 1: (TWF=1 OR OSF=1) AND (HDF=PWF=0)
+# category 2: (TWF=0 AND OSF=0) AND (HDF=1 or PWF=1)
+# category 3: else (including non failure)
+# 
+# res.count <- list()
+# for (i in 1:nrow(rule.group)) {
+#   if(nrow(groups[[i]]) != 1)
+#     for(j in nrow(groups[[i]])){
+#       temp.dat <- groups[[i]]
+#       c1 <- c2 <- c3<- 0
+#       for(k in 1:nrow(temp.dat)){
+#         temp <- temp.dat[k,]
+#         if((temp$TWF==1 | temp$OSF==1) & temp$HDF==0 & temp$PWF==0)
+#         c1 <- c1+1
+#         else if(temp$TWF==0 & temp$OSF==0 & (temp$HDF==1 | temp$PWF==1))
+#           c2 <- c2+1
+#         else
+#           c3 <- c3+1
+#       }
+#       
+#     }
+#   res.count[[i]] <- c(c1,c2,c3)
+# }
+
+
 # Second Option
 # result count for each group
 # category 1: 0 failure mode
 # category 2: 1 failure modes
 # category 3: 1+ failure modes
-
-res.count <- list()
-for (i in 1:nrow(rule.group)) {
-  #if(nrow(groups[[i]]) != 1)
-      temp.dat <- groups[[i]]
-      c1 <- c2 <- c3 <- 0
-      for(k in 1:nrow(temp.dat)){
-        twf <- osf <- hdf <- pwf <- rnf <- 0
-        temp <- temp.dat[k,]
-        if(temp$RNF==1)
-          rnf <- 1
-        if(temp$TWF==1)
-          twf <- 1
-        if(temp$OSF==1)
-          osf <- 1
-        if(temp$HDF==1)
-          hdf <- 1
-        if(temp$PWF==1)
-          pwf <- 1
-        
-        s <- twf+osf+hdf+pwf+rnf
-        if (s>=2) {
-          c3 <- c3 + 1
-        } else if (s==1) {
-          c2 <- c2+1
-        } else {
-          c1 <- c1+1
-        } 
-      }
-  #if(c1+c2+c3!= nrow(groups[[i]]))
-  # cat(c1+c2+c3,",", nrow(groups[[i]])," , ",i, "\n")
-  res.count[[i]] <- c(c1,c2,c3)
-}
+# 
+# res.count <- list()
+# for (i in 1:nrow(rule.group)) {
+#   #if(nrow(groups[[i]]) != 1)
+#       temp.dat <- groups[[i]]
+#       c1 <- c2 <- c3 <- 0
+#       for(k in 1:nrow(temp.dat)){
+#         twf <- osf <- hdf <- pwf <- rnf <- 0
+#         temp <- temp.dat[k,]
+#         if(temp$RNF==1)
+#           rnf <- 1
+#         if(temp$TWF==1)
+#           twf <- 1
+#         if(temp$OSF==1)
+#           osf <- 1
+#         if(temp$HDF==1)
+#           hdf <- 1
+#         if(temp$PWF==1)
+#           pwf <- 1
+#         
+#         s <- twf+osf+hdf+pwf+rnf
+#         if (s>=2) {
+#           c3 <- c3 + 1
+#         } else if (s==1) {
+#           c2 <- c2+1
+#         } else {
+#           c1 <- c1+1
+#         } 
+#       }
+#   #if(c1+c2+c3!= nrow(groups[[i]]))
+#   # cat(c1+c2+c3,",", nrow(groups[[i]])," , ",i, "\n")
+#   res.count[[i]] <- c(c1,c2,c3)
+# }
 
 
 # test: find out the group that has largest c2 or c3
@@ -296,7 +355,10 @@ f = function(parm){
 
 # optim to find estimates for betas, m categories and k covariates
 # so beta(including intercep) will be a (m-1)*(k+1) matrix
-parm <- rep(1, 2*(length(covname)+1))
+if(is.na(covname))
+  parm <- rep(1,1)
+else
+  parm <- rep(1, 2*(length(covname)+1))
 op <- optim(
   parm,
   f,

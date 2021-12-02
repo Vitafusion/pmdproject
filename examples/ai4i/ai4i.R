@@ -184,14 +184,12 @@ ai4i <- ai4i[which(ai4i$bool==0),]
 
 library(dplyr)
 # plot of distribution for each category
-h1 <- ai4i[which(ai4i$TWF==1 | ai4i$OSF==1),]
-h2 <- ai4i[which(ai4i$HDF==1 | ai4i$PWF==1),]
-h3 <- setdiff(ai4i,rbind(h1,h2))
-
-mat.hist <- matrix(c(nrow(h1), nrow(h2), nrow(h3)), nrow=1, byrow = T)
-colnames(mat.hist) <- c('TWF_OSF','HDF_PWF','other')
-
-plot(mat.hist[1,])
+# h1 <- ai4i[which(ai4i$TWF==1 | ai4i$OSF==1),]
+# h2 <- ai4i[which(ai4i$HDF==1 | ai4i$PWF==1),]
+# h3 <- setdiff(ai4i,rbind(h1,h2))
+# mat.hist <- matrix(c(nrow(h1), nrow(h2), nrow(h3)), nrow=1, byrow = T)
+# colnames(mat.hist) <- c('TWF_OSF','HDF_PWF','other')
+# plot(mat.hist[1,])
 
 # generateing result counts
 res.count <- list()
@@ -355,10 +353,12 @@ f = function(parm){
 
 # optim to find estimates for betas, m categories and k covariates
 # so beta(including intercep) will be a (m-1)*(k+1) matrix
-if(is.na(covname))
-  parm <- rep(1,1)
-else
-  parm <- rep(1, 2*(length(covname)+1))
+if(is.na(covname)){ 
+  parm <- rep(1,2)
+} else { 
+  parm <- c(1, 1, rep(0, (m-1)*(length(covname))))
+}
+
 op <- optim(
   parm,
   f,

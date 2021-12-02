@@ -194,7 +194,7 @@ ai4i <- ai4i[which(ai4i$bool==0),]
 # generateing result counts
 res.count <- list()
 for (i in 1:nrow(rule.group)) {
-  if(nrow(groups[[i]]) != 1)
+  #if(nrow(groups[[i]]) != 1)
     for(j in nrow(groups[[i]])){
       temp.dat <- groups[[i]]
       c1 <- c2 <- c3 <- 0
@@ -207,7 +207,6 @@ for (i in 1:nrow(rule.group)) {
         else
           c3 <- c3+1
       }
-      
     }
   res.count[[i]] <- c(c1,c2,c3)
 }
@@ -312,8 +311,9 @@ for (i in 1:nrow(rule.group)) {
 
 covariates <- c("Air temperature [K]", "Process temperature [K]", "Rotational speed [rpm]", "Torque [Nm]")
 seed <- 1
-covidx=c(1,2,3,4,5)
-
+covidx=c(1,2,3,4)
+# category number 3
+m <- 3
 
 ## read in the command line arguments
 ## run with: R CMD BATCH '--args seed=1 covidx=c(1,2,3,4,5)' ai4i.R
@@ -353,7 +353,7 @@ f = function(parm){
 
 # optim to find estimates for betas, m categories and k covariates
 # so beta(including intercep) will be a (m-1)*(k+1) matrix
-if(is.na(covname)){ 
+if(is.na(covname[1])){ 
   parm <- rep(1,2)
 } else { 
   parm <- c(1, 1, rep(0, (m-1)*(length(covname))))

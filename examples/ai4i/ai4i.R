@@ -182,7 +182,7 @@ for(i in 1:nrow(ai4i)){
 
 ai4i <- ai4i[which(ai4i$bool==0),]
 
-library(dplyr)
+# library(dplyr)
 # plot of distribution for each category
 # h1 <- ai4i[which(ai4i$TWF==1 | ai4i$OSF==1),]
 # h2 <- ai4i[which(ai4i$HDF==1 | ai4i$PWF==1),]

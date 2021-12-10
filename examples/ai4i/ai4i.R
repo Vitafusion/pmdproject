@@ -180,12 +180,12 @@ for(i in 1:nrow(ai4i)){
     ai4i$bool[i] <- 1
 }
 
-ai4i <- ai4i[which(ai4i$bool==0),]
+#ai4i <- ai4i[which(ai4i$bool==0),]
 
 library(dplyr)
 #plot of distribution for each category
-h1 <- ai4i[which(ai4i$TWF==1 | ai4i$OSF==1),]
-h2 <- ai4i[which(ai4i$HDF==1 | ai4i$PWF==1),]
+h1 <- ai4i[which((ai4i$TWF==1 | ai4i$OSF==1)&(ai4i$HDF==0 & ai4i$PWF==0)),]
+h2 <- ai4i[which((ai4i$HDF==1 | ai4i$PWF==1)&(ai4i$TWF==0 & ai4i$OSF==0)),]
 h3 <- setdiff(ai4i,rbind(h1,h2))
 mat.hist <- matrix(c(nrow(h1), nrow(h2), nrow(h3)), nrow=1, byrow = T)
 colnames(mat.hist) <- c('TWF_OSF','HDF_PWF','other')
@@ -212,9 +212,9 @@ for (i in 1:nrow(rule.group)) {
       c1 <- c2 <- c3 <- 0
       for(k in 1:nrow(temp.dat)){
         temp <- temp.dat[k,]
-        if(temp$TWF==1 | temp$OSF==1)
+        if((temp$TWF==1 | temp$OSF==1)&(temp$HDF==0 & temp$PWF==0))
           c1 <- c1+1
-        else if(temp$HDF==1 | temp$PWF==1)
+        else if((temp$TWF==0 & temp$OSF==0)&(temp$HDF==1 | temp$PWF==1))
           c2 <- c2+1
         else
           c3 <- c3+1

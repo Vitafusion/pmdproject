@@ -381,6 +381,75 @@ op <- optim(
 op 
 
 
+
+h <- op$hessian
+hinv <- solve(h)
+
+if(any(diag(hinv) < 0)){
+  parm <- op$par
+  op <- optim(
+  parm,
+  f,
+  method = "Nelder-Mead",
+  hessian = T,
+  control = list(trace = T,maxit = 30000)
+)
+} else {
+  save(op,h,hinv, file='ai4i_7.RData')
+}
+
+
+h <- op$hessian
+hinv <- solve(h)
+if(any(diag(hinv) < 0)){
+  parm <- op$par
+  op <- optim(
+  parm,
+  f,
+  method = "Nelder-Mead",
+  hessian = T,
+  control = list(trace = T,maxit = 30000)
+)
+} else {
+  save(op,h,hinv, file='ai4i_6.RData')
+}
+
+
+
+h <- op$hessian
+hinv <- solve(h)
+if(any(diag(hinv) < 0)){
+  parm <- op$par
+  op <- optim(
+  parm,
+  f,
+  method = "Nelder-Mead",
+  hessian = T,
+  control = list(trace = T,maxit = 30000)
+)
+} else {
+  save(op,h,hinv, file='ai4i_5.RData')
+}
+
+
+h <- op$hessian
+hinv <- solve(h)
+if(any(diag(hinv) < 0)){
+  parm <- op$par
+  op <- optim(
+  parm,
+  f,
+  method = "Nelder-Mead",
+  hessian = T,
+  control = list(trace = T,maxit = 30000)
+)
+} else {
+  save(op,h,hinv, file='ai4i_4.RData')
+}
+
+
+
+
 # #parm <- c(7.142795, -3.243091,  1.927554,  3.688145, -2.688194,  1.608610)
 
 # # estimated beta

@@ -491,7 +491,7 @@ if(any(diag(hinv) < 0)){
 
 # save results
 
-expr <- paste0('ai4i_', seed, '.RData')
-save(op, beta.hat, H, file=expr)
+# expr <- paste0('ai4i_', seed, '.RData')
+# save(op, beta.hat, H, file=expr)
 
 

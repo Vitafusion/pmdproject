@@ -1,7 +1,15 @@
+# This file contains R codes for section 5.3 in paper 
+# "The Poisson Multinomial Distribution and Its Applications in Voting Theory, Ecological Inference, and Machine Learning"
+# by Zhengzhi Lin, Yueyao Wang, and Yili Hong.
+
+
+
+
 dat = read.csv("PMDpmat.csv", header = F)
 library(PoissonMultinomial)
 library(tidyr)
 library(dplyr)
+source('confusion_functions.R')
 
 ytrue = vector("character",nrow(dat))
 ytrue_before = dat[,5]
@@ -28,20 +36,6 @@ type_count = (datdf %>% group_by(V5) %>% summarise(n = n()))
 
 
 
-confusion_df = function(pmat, type){
-  
-  pmat_A = as.matrix(pmat[ytrue==type,])
-  Asam = rpmd(pmat_A, s = 10000)
-  colnames(Asam) = paste0("Pred:",c("1","2","3","4"))
-  Asam = as.data.frame(Asam)
-  Asam = Asam %>% gather(predclass, n)
-  Asam$trueclass = paste0("True:",type)
-  Asam$expect = numeric(nrow(Asam))
-  Asam$expect[Asam$predclass == paste0("Pred:",type)] = type_count$n[type_count$V5 == type]
-  return(Asam)
-  
-}
-
 
 
 Adf = confusion_df(pmat, "1")
@@ -53,63 +47,9 @@ df = rbind(Adf,Bdf,Cdf,Ddf)
 
 library(ggplot2)
 ggplot(df, aes(x = n))+ geom_histogram() +
-  #geom_vline(aes(xintercept=expect),color="black", linetype="dashed", size=1) + 
   facet_grid(predclass~ trueclass,scales = 'free_x')
 
 
-#######################3
-# pmat_B = as.matrix(pmat[ytrue=="B",])
-# dB = dpmd(pmat_B)
-# dba = dbb = dbc = dbd = numeric(type_count$n[2]+1) # legnth of n+1
-# for(i in 1:length(dba)){
-#   print(i)
-#   dba[i] = sum(dB[(i),,])
-#   dbb[i] = sum(dB[,i,])
-#   dbc[i] = sum(dB[,,i])
-# }
-# since the D class can not obtained in the above way, we switch the column 
-# between A and D. Let D to be the first column to let the compute easier
-# pmat_Bprime = pmat_B
-# pmat_Bprime[,1] = pmat_B[,4]
-# pmat_Bprime[,4] = pmat_B[,1]
-# dBprime = dpmd(pmat_Bprime)
-# for(i in 1:length(dbd)){
-#   print(i)
-#   dbd[i] = sum(dBprime[(i),,])
-# }
-# 
-# 
-# count = as.factor(0:type_count$n[type_count$V5=="B"])
-# outputdf = cbind(count,dba,dbb,dbc,dbd)
-
-marginal_bar = function(pmat, type){
-  pmat_B = as.matrix(pmat[ytrue==type,])
-  dB = dpmd(pmat_B)
-  dba = dbb = dbc = dbd = numeric(type_count$n[type_count$V5==type]+1) # legnth of n+1
-  for(i in 1:length(dba)){
-    print(i)
-    dba[i] = sum(dB[(i),,])
-    dbb[i] = sum(dB[,i,])
-    dbc[i] = sum(dB[,,i])
-  }
-  # since the D class can not obtained in the above way, we switch the column 
-  # between A and D. Let D to be the first column to let the compute easier
-  pmat_Bprime = pmat_B
-  pmat_Bprime[,1] = pmat_B[,4]
-  pmat_Bprime[,4] = pmat_B[,1]
-  dBprime = dpmd(pmat_Bprime)
-  for(i in 1:length(dbd)){
-    print(i)
-    dbd[i] = sum(dBprime[(i),,])
-  }
-  count = as.factor(0:type_count$n[type_count$V5==type])
-  outputdf = cbind(count,dba,dbb,dbc,dbd)
-  colnames(outputdf) = c("count",paste0("Pred:",c("1","2","3","4")))
-  outputdf= as.data.frame(outputdf)
-  outputdf = outputdf %>% gather(predclass, n,-count)
-  outputdf$trueclass = paste0("True:",type)
-  return(outputdf)
-}
 outA = (marginal_bar(pmat, "1"))
 outB = (marginal_bar(pmat, "2"))
 outC = (marginal_bar(pmat, type = "3"))
@@ -136,7 +76,7 @@ ggplot(data = out2, aes(x =name, y = value))+ geom_bar(stat="identity") +
 #                 rep(seq(11,15,by = 1),2),
 #                 rep(seq(16,20,by = 1),2),
 #                 rep(seq(21,25,by = 1),2),nrow = 5, byrow = T)))
-load("marginal")
+load("marginal.RData")
 out = as.data.frame(rbind(outA, outB, outC, outD))
 colnames(out) = c("name","predclass","value","trueclass")
 out2 = out[out$value!=0,]
@@ -146,11 +86,17 @@ out2$trueclass = unlist(lapply(strsplit(out2$trueclass,split = ":"), function(x)
 trueclass = unique(out2$trueclass)
 predclass = unique(out2$predclass)
 
+
+
+setEPS()
+
+postscript("Confusionbar.eps")
+
 par(oma = c(5,5,2,1.5), mfrow = c(4,4),mar=c(1,0,1.5,1.5))
 
-for(i in 1:length(trueclass)){ 
-  for(j in 1:length(predclass)){
-    sub = out2[(out2$predclass == predclass[j] & out2$trueclass == trueclass[i]),]
+for(i in 1:length(predclass)){ 
+  for(j in 1:length(trueclass)){
+    sub = out2[(out2$trueclass == trueclass[j] & out2$predclass == predclass[i]),]
     sub$name = as.numeric(sub$name) - 1
     ex = sum((as.numeric(sub$name))*sub$value)
     ex2 = sum((as.numeric(sub$name))^2*sub$value)
@@ -174,12 +120,12 @@ for(i in 1:length(trueclass)){
       axis(2, cex.axis=1.5)
     }
     if(i == 1){
-      mtext(predclass[j], side = 3,line = 1, font=2, cex=1.3)
+      mtext(trueclass[j], side = 3,line = 1, font=2, cex=1.3)
     }
     if(j == 4){
       corners = par("usr") #Gets the four corners of plot area (x1, x2, y1, y2)
       par(xpd = TRUE) #Draw outside plot area
-      text(x = corners[2], y = mean(corners[3:4]), trueclass[i], srt = -90, cex = 1.8, font=2)
+      text(x = corners[2], y = mean(corners[3:4]), predclass[i], srt = -90, cex = 1.8, font=2)
       #mtext(trueclass[i], side = 4)
     }
     if(j == 1 & i == 2){
@@ -190,4 +136,6 @@ for(i in 1:length(trueclass)){
     }
   }
 }
+
+dev.off()
 

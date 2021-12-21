@@ -1,1 +1,2 @@
-PKG_LIBS = -lfftw3 -lgsl -lgslcblas -lm
+PKG_CFLAG = ${FFTW3_CPPFLAG}
+PKG_LIBS = ${FFTW3_LIB}

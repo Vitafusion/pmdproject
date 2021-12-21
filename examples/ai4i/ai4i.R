@@ -475,13 +475,15 @@ if(any(diag(hinv) < 0)){
 #                    "Process temperature [K]",
 #                    "Rotational speed [rpm]",
 #                    "Torque [Nm]")
-# category_number = 3
-# for(i in 1:length(groups)) {
-#   x = groups[[i]]
-#   x = x[,covariate_name]
-#   pp[[i]]= cal_pmatrix(op$par, x, category_number)
+category_number = 3
+for(i in 1:length(groups)) {
+  x = groups[[i]]
+  x = x[,covariate_name]
+  x = as.matrix(x)
+  x = cbind(matrix(1, nrow = nrow(x),ncol = 1), x)
+  pp[[i]]= cal_pmatrix(op$par, x, category_number)
   
-# }
+}
 
 # # P matrix for group 1, 5 and 8
 # pp[[1]]
